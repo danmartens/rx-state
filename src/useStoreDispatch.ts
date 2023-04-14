@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Store } from './createStore';
+import { Store } from './types';
 
 export const useStoreDispatch = <State, Action>(
   store: Store<State, Action>

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { Store } from './createStore';
+import { Store } from './types';
 
 export const useStoreState = <State, Action>(store: Store<State, Action>) => {
   return useSyncExternalStore((onChange) => {

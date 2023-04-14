@@ -1,4 +1,4 @@
-import { Store } from './createStore';
+import { Store } from './types';
 import { useStoreDispatch } from './useStoreDispatch';
 import { useStoreState } from './useStoreState';
 

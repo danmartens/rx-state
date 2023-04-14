@@ -6,28 +6,19 @@ import {
   Subscription,
   finalize,
 } from 'rxjs';
-
-type Effect<Action, State> = (
-  action$: Observable<Action>,
-  state$: Observable<State>
-) => Observable<Action>;
-
-export interface Store<State, Action> {
-  next(action: Action): void;
-  subscribe(observer: Partial<Observer<State>>): Subscription;
-  getState(): State;
-}
+import { Effect, Store } from './types';
 
 export const createStore =
-  <State, Action>(
-    reducer: (state: State, action: Action) => State,
-    effects: Effect<Action, State>[] = []
+  <TState, TAction, TDependencies extends Record<string, unknown> = {}>(
+    reducer: (state: TState, action: TAction) => TState,
+    effects: Effect<TAction, TState, TDependencies>[] = []
   ) =>
-  (initialState: State): Store<State, Action> => {
-    const state$ = new BehaviorSubject<State>(initialState);
-    const action$ = new Subject<Action>();
+  (dependencies: TDependencies) =>
+  (initialState: TState): Store<TState, TAction> => {
+    const state$ = new BehaviorSubject<TState>(initialState);
+    const action$ = new Subject<TAction>();
 
-    const dispatch = (action: Action) => {
+    const dispatch = (action: TAction) => {
       state$.next(reducer(state$.getValue(), action));
       action$.next(action);
     };
@@ -36,14 +27,14 @@ export const createStore =
     const effectSubscriptions = new Set<Subscription>();
 
     return {
-      next: (action: Action) => {
+      next: (action: TAction) => {
         dispatch(action);
       },
-      subscribe: (observer: Observer<State>) => {
+      subscribe: (observer: Observer<TState>) => {
         if (effectSubscriptions.size === 0) {
           for (const effect of effects) {
             effectSubscriptions.add(
-              effect(action$, state$).subscribe((action) => {
+              effect(action$, state$, dependencies).subscribe((action) => {
                 dispatch(action);
               })
             );
