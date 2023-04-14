@@ -1,16 +1,20 @@
 import {
   BehaviorSubject,
-  Observable,
   Observer,
   Subject,
   Subscription,
   distinctUntilChanged,
   finalize,
 } from 'rxjs';
-import { Effect, Store } from './types';
+
+import { Action, Effect, Store } from './types';
 
 export const createStore =
-  <TState, TAction, TDependencies extends Record<string, unknown> = {}>(
+  <
+    TState,
+    TAction extends Action,
+    TDependencies extends Record<string, unknown> = {}
+  >(
     reducer: (state: TState, action: TAction) => TState,
     effects: Effect<TAction, TState, TDependencies>[] = []
   ) =>

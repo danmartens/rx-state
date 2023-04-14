@@ -8,13 +8,13 @@ import {
   useSyncExternalStore,
 } from 'react';
 
-import { Store } from './types';
+import { Action, Store } from './types';
 import { useStoreState } from './useStoreState';
 import { useStoreDispatch } from './useStoreDispatch';
 
 export const createStoreContext = <
   TState,
-  TAction,
+  TAction extends Action,
   TDependencies extends Record<string, unknown> = {}
 >(
   storeFactory: (

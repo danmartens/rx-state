@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from 'react';
-import { Store } from './types';
+import { Action, Store } from './types';
 
-export const useStoreState = <State, Action>(store: Store<State, Action>) => {
+export const useStoreState = <TState, TAction extends Action>(
+  store: Store<TState, TAction>
+) => {
   return useSyncExternalStore((onChange) => {
     const subscription = store.subscribe({
       next: () => {

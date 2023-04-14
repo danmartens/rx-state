@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
-import { Store } from './types';
 
-export const useStoreDispatch = <State, Action>(
-  store: Store<State, Action>
+import { Action, Store } from './types';
+
+export const useStoreDispatch = <TState, TAction extends Action>(
+  store: Store<TState, TAction>
 ) => {
   return useCallback(
-    (action: Action) => {
+    (action: TAction) => {
       store.next(action);
     },
     [store]

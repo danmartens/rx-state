@@ -1,13 +1,17 @@
 import { Observable, Observer, Subscription } from 'rxjs';
 
-export interface Store<TState, TAction> {
+export interface Action<T = any> {
+  type: T;
+}
+
+export interface Store<TState, TAction extends Action> {
   next(action: TAction): void;
   subscribe(observer: Partial<Observer<TState>>): Subscription;
   getState(): TState;
 }
 
 export type Effect<
-  TAction,
+  TAction extends Action,
   TState,
   TDependencies extends Record<string, unknown> = {}
 > = (
