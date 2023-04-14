@@ -34,7 +34,7 @@ describe('createStore', () => {
     store.next({ type: 'INCREMENT' });
     store.next({ type: 'INCREMENT' });
 
-    expect(observer.next).toHaveBeenCalledTimes(3);
+    expect(observer.next).toHaveBeenCalledTimes(1);
 
     subscription.unsubscribe();
   });

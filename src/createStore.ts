@@ -4,6 +4,7 @@ import {
   Observer,
   Subject,
   Subscription,
+  distinctUntilChanged,
   finalize,
 } from 'rxjs';
 import { Effect, Store } from './types';
@@ -17,6 +18,8 @@ export const createStore =
   (initialState: TState): Store<TState, TAction> => {
     const state$ = new BehaviorSubject<TState>(initialState);
     const action$ = new Subject<TAction>();
+
+    const distinctState$ = state$.pipe(distinctUntilChanged());
 
     const dispatch = (action: TAction) => {
       state$.next(reducer(state$.getValue(), action));
@@ -34,16 +37,18 @@ export const createStore =
         if (effectSubscriptions.size === 0) {
           for (const effect of effects) {
             effectSubscriptions.add(
-              effect(action$, state$, dependencies).subscribe((action) => {
-                dispatch(action);
-              })
+              effect(action$, distinctState$, dependencies).subscribe(
+                (action) => {
+                  dispatch(action);
+                }
+              )
             );
           }
         }
 
         subscriptionCount++;
 
-        return state$
+        return distinctState$
           .pipe(
             finalize(() => {
               subscriptionCount--;
