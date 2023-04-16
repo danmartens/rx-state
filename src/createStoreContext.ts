@@ -38,12 +38,12 @@ export const createStoreContext = <
   const useSelector = <TSelected>(selector: (state: TState) => TSelected) => {
     const store = useContext(StoreContext);
 
-    if (store == null) {
-      throw new Error('Store is not initialized');
-    }
+    const subscribe = useCallback(
+      (onChange: () => void) => {
+        if (store == null) {
+          throw new Error('Store is not initialized');
+        }
 
-    return useSyncExternalStore(
-      (onChange) => {
         const subscription = store.subscribe({
           next: () => {
             onChange();
@@ -54,8 +54,14 @@ export const createStoreContext = <
           subscription.unsubscribe();
         };
       },
-      () => selector(store.getState())
+      [store]
     );
+
+    if (store == null) {
+      throw new Error('Store is not initialized');
+    }
+
+    return useSyncExternalStore(subscribe, () => selector(store.getState()));
   };
 
   const useDispatch = () => {

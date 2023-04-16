@@ -1,12 +1,13 @@
-import { useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
+
 import { Action, Store } from './types';
 
 export const useStoreSelector = <TState, TAction extends Action, TSelected>(
   store: Store<TState, TAction>,
   selector: (state: TState) => TSelected
 ): TSelected => {
-  return useSyncExternalStore(
-    (onChange) => {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
       const subscription = store.subscribe({
         next: () => {
           onChange();
@@ -17,6 +18,8 @@ export const useStoreSelector = <TState, TAction extends Action, TSelected>(
         subscription.unsubscribe();
       };
     },
-    () => selector(store.getState())
+    [store]
   );
+
+  return useSyncExternalStore(subscribe, () => selector(store.getState()));
 };

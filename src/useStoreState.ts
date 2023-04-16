@@ -1,18 +1,23 @@
-import { useSyncExternalStore } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import { Action, Store } from './types';
 
 export const useStoreState = <TState, TAction extends Action>(
   store: Store<TState, TAction>
 ) => {
-  return useSyncExternalStore((onChange) => {
-    const subscription = store.subscribe({
-      next: () => {
-        onChange();
-      },
-    });
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const subscription = store.subscribe({
+        next: () => {
+          onChange();
+        },
+      });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, store.getState);
+      return () => {
+        subscription.unsubscribe();
+      };
+    },
+    [store]
+  );
+
+  return useSyncExternalStore(subscribe, store.getState);
 };
