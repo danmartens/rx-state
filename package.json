@@ -1,7 +1,7 @@
 {
   "name": "@danmartens/rx-state",
   "repository": "https://github.com/danmartens/rx-state.git",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packageManager": "yarn@3.5.0",
   "main": "dist/index.js",
   "files": [
