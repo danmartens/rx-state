@@ -1,5 +1,6 @@
+import React, { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { ReactNode } from 'react';
+import { screen } from '@testing-library/dom';
 
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';
@@ -35,15 +36,15 @@ describe('createStoreContext', () => {
       []
     );
 
-    const Context = createStoreContext(storeFactory);
+    const { Provider, useStore } = createStoreContext(storeFactory);
 
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <Context.Provider initialState={42} dependencies={{}}>
+      <Provider initialState={42} dependencies={{}}>
         {children}
-      </Context.Provider>
+      </Provider>
     );
 
-    const { result } = renderHook(() => Context.useStore(), { wrapper });
+    const { result } = renderHook(() => useStore(), { wrapper });
 
     let [state, dispatch] = result.current;
 

@@ -2,6 +2,8 @@ import { filter, map, tap } from 'rxjs';
 
 import { createStore } from '../createStore';
 
+type Action = { type: 'PING' } | { type: 'PONG' };
+
 describe('createStore', () => {
   test('getState()', () => {
     const store = createStore((state, _action) => state, [])({})(42);
@@ -143,5 +145,3 @@ describe('createStore', () => {
     });
   });
 });
-
-type Action = { type: 'PING' } | { type: 'PONG' };

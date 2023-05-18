@@ -15,7 +15,7 @@ describe('useStore()', () => {
     unmount();
   });
 
-  test('dispatch()', () => {
+  test('dispatching actions', () => {
     const store = createStore(
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
