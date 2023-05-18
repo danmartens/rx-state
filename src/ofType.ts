@@ -16,18 +16,19 @@ const keyHasType = (type: unknown, key: unknown) => {
  */
 export function ofType<
   // All possible actions your app can dispatch
-  Input extends Action,
+  TInput extends Action,
   // The types you want to filter for
-  Type extends Input['type'],
+  TType extends TInput['type'],
   // The resulting actions that match the above types
-  Output extends Input = Extract<Input, Action<Type>>
->(...types: [Type, ...Type[]]): OperatorFunction<Input, Output> {
-  const len = types.length;
+  TOutput extends TInput = Extract<TInput, Action<TType>>
+>(...types: [TType, ...TType[]]): OperatorFunction<TInput, TOutput> {
+  const count = types.length;
 
   if (process.env.NODE_ENV !== 'production') {
-    if (len === 0) {
+    if (count === 0) {
       console.warn('ofType was called without any types!');
     }
+
     if (types.some((key) => key === null || key === undefined)) {
       console.warn(
         'ofType was called with one or more undefined or null values!'
@@ -36,10 +37,10 @@ export function ofType<
   }
 
   return filter(
-    len === 1
-      ? (action): action is Output => keyHasType(action.type, types[0])
-      : (action): action is Output => {
-          for (let i = 0; i < len; i++) {
+    count === 1
+      ? (action): action is TOutput => keyHasType(action.type, types[0])
+      : (action): action is TOutput => {
+          for (let i = 0; i < count; i++) {
             if (keyHasType(action.type, types[i])) {
               return true;
             }

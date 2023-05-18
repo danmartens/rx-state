@@ -25,8 +25,11 @@ export const createStore =
 
     const distinctState$ = state$.pipe(distinctUntilChanged());
 
-    const dispatch = (action: TAction) => {
+    action$.subscribe((action) => {
       state$.next(reducer(state$.getValue(), action));
+    });
+
+    const dispatch = (action: TAction) => {
       action$.next(action);
     };
 
@@ -61,6 +64,8 @@ export const createStore =
                 for (const subscription of effectSubscriptions) {
                   subscription.unsubscribe();
                 }
+
+                effectSubscriptions.clear();
               }
             })
           )

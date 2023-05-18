@@ -4,6 +4,7 @@ import {
   createElement,
   useCallback,
   useContext,
+  useMemo,
   useRef,
   useSyncExternalStore,
 } from 'react';
@@ -92,8 +93,31 @@ export const createStoreContext = <
     return [state, dispatch] as const;
   };
 
+  const createActionDispatchHook = <
+    TActionCreators extends Record<string, (...args: any[]) => TAction>
+  >(
+    actionCreators: TActionCreators
+  ) => {
+    return () => {
+      const dispatch = useDispatch();
+
+      return useMemo(() => {
+        return Object.fromEntries(
+          Object.entries(actionCreators).map(([key, actionCreator]) => {
+            return [key, (...args) => dispatch(actionCreator(...args))];
+          })
+        ) as {
+          [K in keyof TActionCreators]: (
+            ...args: Parameters<TActionCreators[K]>
+          ) => void;
+        };
+      }, [dispatch]);
+    };
+  };
+
   return {
     Provider,
+    createActionDispatchHook,
     useSelector,
     useDispatch,
     useStore,
