@@ -15,7 +15,12 @@ export default defineConfig({
     typescript({
       jsx: 'react-jsx',
       emitDeclarationOnly: true,
-      exclude: ['src/**/*.stories.tsx', 'types', 'rollup.config.ts'],
+      exclude: [
+        'src/**/*.stories.tsx',
+        'types',
+        'jest-setup.ts',
+        'rollup.config.ts',
+      ],
     }),
   ],
 });
