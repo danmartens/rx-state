@@ -1,3 +1,4 @@
+export { createReducer } from './createReducer';
 export { createStore } from './createStore';
 export { createStoreContext } from './createStoreContext';
 export { ofType } from './ofType';
