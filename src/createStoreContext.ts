@@ -5,22 +5,20 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useRef,
+  useState,
   useSyncExternalStore,
 } from 'react';
 
-import { Action, Store } from './types';
-import { useStoreState } from './useStoreState';
+import { Action, Store, StoreFactory } from './types';
 import { useStoreDispatch } from './useStoreDispatch';
+import { useStoreState } from './useStoreState';
 
 export const createStoreContext = <
   TState,
   TAction extends Action,
   TDependencies extends Record<string, unknown> = {}
 >(
-  storeFactory: (
-    dependencies: TDependencies
-  ) => (initialState: TState) => Store<TState, TAction>
+  storeFactory: StoreFactory<TState, TAction, TDependencies>
 ) => {
   const StoreContext = createContext<Store<TState, TAction> | null>(null);
 
@@ -31,7 +29,7 @@ export const createStoreContext = <
   }> = (props) => {
     const { initialState, dependencies, children } = props;
 
-    const store = useRef(storeFactory(dependencies)(initialState)).current;
+    const [store] = useState(() => storeFactory(initialState, dependencies));
 
     return createElement(StoreContext.Provider, { value: store }, children);
   };

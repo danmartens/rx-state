@@ -5,7 +5,7 @@ import { useStore } from '../useStore';
 
 describe('useStore()', () => {
   test('initial state', () => {
-    const store = createStore((state, _action) => state, [])({})(42);
+    const store = createStore((state, _action) => state, [])(42);
 
     const { result, unmount } = renderHook(() => useStore(store));
     const [state] = result.current;
@@ -20,7 +20,7 @@ describe('useStore()', () => {
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
       []
-    )({})(42);
+    )(42);
 
     const { result, unmount } = renderHook(() => useStore(store));
 

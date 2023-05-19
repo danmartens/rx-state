@@ -7,7 +7,7 @@ describe('useStoreFactory()', () => {
     const factory = createStore(
       (state: { message: string }, _action) => state,
       []
-    )({});
+    );
 
     const initialState = { message: 'Hello' };
     const stateRef = { current: initialState };

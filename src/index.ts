@@ -9,4 +9,4 @@ export { useStoreState } from './useStoreState';
 
 export { initializeEffect } from './support/initializeEffect';
 
-export type { Store, Effect, Action } from './types';
+export type { Store, StoreFactory, Action, Effect } from './types';

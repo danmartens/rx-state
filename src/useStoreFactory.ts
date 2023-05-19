@@ -1,13 +1,18 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 
-import { Action, Store } from './types';
+import { Action, StoreFactory } from './types';
 import { useStore } from './useStore';
 
-export const useStoreFactory = <TState, TAction extends Action>(
-  factory: (initialState: TState) => Store<TState, TAction>,
-  initialState: TState
+export const useStoreFactory = <
+  TState,
+  TAction extends Action,
+  TDependencies extends Record<string, unknown>
+>(
+  factory: StoreFactory<TState, TAction, TDependencies>,
+  initialState: TState,
+  dependencies?: TDependencies
 ) => {
-  const store = useRef(factory(initialState)).current;
+  const [store] = useState(() => factory(initialState, dependencies));
 
   return useStore(store);
 };

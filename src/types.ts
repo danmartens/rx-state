@@ -15,6 +15,15 @@ export interface Store<TState, TAction extends Action> {
   getState(): TState;
 }
 
+export type StoreFactory<
+  TState,
+  TAction extends Action,
+  TDependencies extends Record<string, unknown> = {}
+> = (
+  initialState: TState,
+  dependencies?: TDependencies
+) => Store<TState, TAction>;
+
 export type Effect<
   TAction extends Action,
   TState,
@@ -22,5 +31,5 @@ export type Effect<
 > = (
   action$: Observable<TAction>,
   state$: Observable<TState>,
-  dependencies: TDependencies
+  dependencies?: TDependencies
 ) => Observable<TAction>;

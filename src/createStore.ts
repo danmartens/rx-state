@@ -7,7 +7,7 @@ import {
   finalize,
 } from 'rxjs';
 
-import { Action, Effect, Store } from './types';
+import { Action, Effect, Store, StoreFactory } from './types';
 
 export const createStore =
   <
@@ -17,9 +17,11 @@ export const createStore =
   >(
     reducer: (state: TState, action: TAction) => TState,
     effects: Effect<TAction, TState, TDependencies>[] = []
-  ) =>
-  (dependencies: TDependencies) =>
-  (initialState: TState): Store<TState, TAction> => {
+  ): StoreFactory<TState, TAction, TDependencies> =>
+  (
+    initialState: TState,
+    dependencies?: TDependencies
+  ): Store<TState, TAction> => {
     const state$ = new BehaviorSubject<TState>(initialState);
     const action$ = new Subject<TAction>();
 
