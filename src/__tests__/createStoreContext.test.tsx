@@ -1,6 +1,5 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { screen } from '@testing-library/dom';
 
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';
