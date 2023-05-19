@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "test": "jest",
-    "check": "tsc --noEmit",
+    "types:check": "tsc --noEmit",
+    "prettier:check": "prettier --check .",
     "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript"
   },
   "peerDependencies": {
