@@ -1,8 +1,6 @@
-import { getIn } from './getIn';
-
 export function setIn<T extends Record<string, unknown>, K1 extends keyof T>(
   target: T,
-  keys: [K1],
+  key1: K1,
   value: T[K1]
 ): T;
 
@@ -10,24 +8,28 @@ export function setIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
   K2 extends keyof T[K1]
->(target: T, keys: [K1, K2], value: T[K1][K2]): T;
+>(target: T, key1: K1, key2: K2, value: T[K1][K2]): T;
 
 export function setIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2]
->(target: T, keys: [K1, K2, K3], value: T[K1][K2][K3]): T;
+>(target: T, key1: K1, key2: K2, key3: K3, value: T[K1][K2][K3]): T;
 
 export function setIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
   K2 extends keyof T[K1],
-  K3 extends keyof T[K1][K2]
+  K3 extends keyof T[K1][K2],
+  K4 extends keyof T[K1][K2][K3]
 >(
   target: T,
-  keys: [K1] | [K1, K2] | [K1, K2, K3],
-  value: T[K1] | T[K1][K2] | T[K1][K2][K3]
+  key1: K1,
+  key2: K2,
+  key3: K3,
+  key4: K4,
+  value: T[K1][K2][K3][K4]
 ): T;
 
 export function setIn<
@@ -38,116 +40,121 @@ export function setIn<
   K4 extends keyof T[K1][K2][K3]
 >(
   target: T,
-  keys: [K1] | [K1, K2] | [K1, K2, K3] | [K1, K2, K3, K4],
-  value: T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4]
-): T;
-
-export function setIn<
-  T extends Record<string, unknown>,
-  K1 extends keyof T,
-  K2 extends keyof T[K1],
-  K3 extends keyof T[K1][K2],
-  K4 extends keyof T[K1][K2][K3]
->(
-  target: T,
-  keys: [K1] | [K1, K2] | [K1, K2, K3] | [K1, K2, K3, K4],
-  value: T[K1] | T[K1][K2] | T[K1][K2][K3] | T[K1][K2][K3][K4]
+  arg1: K1,
+  arg2: K2 | T[K1],
+  arg3?: K3 | T[K1][K2],
+  arg4?: K4 | T[K1][K2][K3],
+  arg5?: T[K1][K2][K3][K4]
 ): T {
-  switch (keys.length) {
-    case 1: {
-      if (getIn(target, keys) === value) {
-        return target;
-      }
+  assertObject(target);
 
-      return {
-        ...target,
-        [keys[0]]: value,
-      };
+  const key1 = arg1;
+
+  if (arg3 == null) {
+    const value = arg2;
+
+    if (target[key1] === value) {
+      return target;
     }
 
-    case 2: {
-      if (getIn(target, keys) === value) {
-        return target;
-      }
+    return {
+      ...target,
+      [key1]: value,
+    };
+  }
 
-      const nested = target[keys[0]];
+  const record1 = target[key1];
 
-      if (isRecord(nested)) {
-        return {
-          ...target,
-          [keys[0]]: {
-            ...nested,
-            [keys[1]]: value,
-          },
-        };
-      }
+  assertObject(record1, key1);
 
-      throw new Error('Cannot setIn on non-record');
+  const key2 = arg2 as K2;
+
+  if (arg4 == null) {
+    const value = arg3;
+
+    if (record1[key2] === value) {
+      return target;
     }
 
-    case 3: {
-      if (getIn(target, keys) === value) {
-        return target;
-      }
+    return {
+      ...target,
+      [key1]: {
+        ...record1,
+        [key2]: value,
+      },
+    };
+  }
 
-      const v1 = target[keys[0]];
+  const record2 = record1[key2];
 
-      if (isRecord(v1)) {
-        const v2 = v1[keys[1]];
+  assertObject(record2, key1, key2);
 
-        if (isRecord(v2)) {
-          return {
-            ...target,
-            [keys[0]]: {
-              ...v1,
-              [keys[1]]: {
-                ...v2,
-                [keys[2]]: value,
-              },
-            },
-          };
-        }
-      }
+  const key3 = arg3 as K3;
 
-      throw new Error('Cannot setIn on non-record');
+  if (arg5 == null) {
+    const value = arg4;
+
+    if (record2[key3] === value) {
+      return target;
     }
 
-    case 4: {
-      if (getIn(target, keys) === value) {
-        return target;
-      }
+    return {
+      ...target,
+      [key1]: {
+        ...record1,
+        [key2]: {
+          ...record2,
+          [key3]: value,
+        },
+      },
+    };
+  }
 
-      const v1 = target[keys[0]];
+  const record3 = record2[key3];
 
-      if (isRecord(v1)) {
-        const v2 = v1[keys[1]];
+  assertObject(record3, key1, key2, key3);
 
-        if (isRecord(v2)) {
-          const v3 = v2[keys[2]];
+  const key4 = arg4 as K4;
+  const value = arg5;
 
-          if (isRecord(v3)) {
-            return {
-              ...target,
-              [keys[0]]: {
-                ...v1,
-                [keys[1]]: {
-                  ...v2,
-                  [keys[2]]: {
-                    ...v3,
-                    [keys[3]]: value,
-                  },
-                },
-              },
-            };
-          }
-        }
-      }
+  if (record3[key4] === value) {
+    return target;
+  }
 
-      throw new Error('Cannot setIn on non-record');
+  return {
+    ...target,
+    [key1]: {
+      ...record1,
+      [key2]: {
+        ...record2,
+        [key3]: {
+          ...record3,
+          [key4]: value,
+        },
+      },
+    },
+  };
+}
+
+function assertObject(
+  value: unknown,
+  ...keyPath: Array<string | number | symbol>
+): asserts value is Record<string, unknown> {
+  if (!isObject(value)) {
+    if (keyPath.length > 0) {
+      throw new TypeError(
+        `Value at key path "${keyPath.join(
+          '.'
+        )}" is a ${typeof value} and therefore cannot be updated via setIn`
+      );
     }
+
+    throw new TypeError(
+      'Target is not an object and therefore cannot be updated via setIn'
+    );
   }
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
+function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
-};
+}
