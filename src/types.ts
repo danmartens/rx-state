@@ -1,13 +1,15 @@
-import { Observable, Observer, Subscription } from 'rxjs';
+import { Observable, Observer, Subject, Subscription } from 'rxjs';
 
 export interface Action<T = any> {
   type: T;
 }
 
-export type ActionOfType<T extends Action['type']> = Extract<
-  Action,
-  { type: T }
->;
+export type ActionOfType<
+  TAction extends Action,
+  TType extends TAction['type']
+> = Extract<Action, { type: TType }>;
+
+export interface Dispatcher<TAction extends Action> extends Subject<TAction> {}
 
 export interface Store<TState, TAction extends Action> {
   next(action: TAction): void;
@@ -29,7 +31,7 @@ export type Effect<
   TState,
   TDependencies extends Record<string, unknown> = {}
 > = (
-  action$: Observable<TAction>,
+  action$: Dispatcher<TAction>,
   state$: Observable<TState>,
   dependencies?: TDependencies
 ) => Observable<TAction>;
