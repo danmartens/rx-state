@@ -1,13 +1,13 @@
 import {
   BehaviorSubject,
   Observer,
-  Subject,
   Subscription,
   distinctUntilChanged,
   finalize,
 } from 'rxjs';
 
-import { Action, Effect, Store, StoreFactory } from './types';
+import { Action, Dispatcher, Effect, Store, StoreFactory } from './types';
+import { createDispatcher } from './createDispatcher';
 
 export const createStore =
   <
@@ -16,14 +16,14 @@ export const createStore =
     TDependencies extends Record<string, unknown> = {}
   >(
     reducer: (state: TState, action: TAction) => TState,
-    effects: Effect<TAction, TState, TDependencies>[] = []
+    effects: Effect<TAction, TState, TDependencies>[] = [],
+    action$: Dispatcher<TAction> = createDispatcher()
   ): StoreFactory<TState, TAction, TDependencies> =>
   (
     initialState: TState,
     dependencies?: TDependencies
   ): Store<TState, TAction> => {
     const state$ = new BehaviorSubject<TState>(initialState);
-    const action$ = new Subject<TAction>();
 
     const distinctState$ = state$.pipe(distinctUntilChanged());
 

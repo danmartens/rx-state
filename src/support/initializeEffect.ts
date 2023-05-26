@@ -69,9 +69,9 @@ export const initializeEffect = <
    * Returns a `Promise` that resolves with the next action of type `actionType`
    * dispatched by the `Effect`.
    */
-  const nextActionOfType = <T extends Action['type']>(
-    actionType: T
-  ): Promise<ActionOfType<T>> => {
+  const nextActionOfType = <TType extends TAction['type']>(
+    actionType: TType
+  ): Promise<ActionOfType<TAction, TType>> => {
     return new Promise((resolve, reject) => {
       const subscription = output$
         .pipe(filter((action) => action.type === actionType))
@@ -81,7 +81,7 @@ export const initializeEffect = <
               subscription.unsubscribe();
             });
 
-            resolve(value as ActionOfType<T>);
+            resolve(value as ActionOfType<TAction, TType>);
           },
           error: reject,
         });

@@ -1,3 +1,5 @@
+export { createCancelableEffect } from './createCancelableEffect';
+export { createDispatcher } from './createDispatcher';
 export { createEffect } from './createEffect';
 export { createReducer } from './createReducer';
 export { createStore } from './createStore';

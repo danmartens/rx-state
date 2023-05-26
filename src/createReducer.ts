@@ -6,15 +6,19 @@ type Reducer<TState, TAction extends Action> = (
 ) => TState;
 
 export const createReducer =
-  <TState, TAction extends Action>(reducers: {
-    [TType in TAction['type']]: Reducer<
-      Readonly<TState>,
-      Extract<TAction, { type: TType }>
-    >;
-  }) =>
+  <TState, TAction extends Action>(
+    reducers: Partial<{
+      [TType in TAction['type']]: Reducer<
+        Readonly<TState>,
+        Extract<TAction, { type: TType }>
+      >;
+    }>
+  ) =>
   (state: TState, action: TAction): TState => {
-    if (action.type in reducers) {
-      return reducers[action.type as TAction['type']](
+    const reducer = reducers[action.type as TAction['type']];
+
+    if (reducer != null) {
+      return reducer(
         state,
         action as Extract<TAction, { type: typeof action.type }>
       );
