@@ -60,7 +60,11 @@ export const createStoreContext = <
       throw new Error('Store is not initialized');
     }
 
-    return useSyncExternalStore(subscribe, () => selector(store.getState()));
+    return useSyncExternalStore(
+      subscribe,
+      () => selector(store.getState()),
+      () => selector(store.getState())
+    );
   };
 
   const useDispatch = () => {

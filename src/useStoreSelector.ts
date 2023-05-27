@@ -21,5 +21,9 @@ export const useStoreSelector = <TState, TAction extends Action, TSelected>(
     [store]
   );
 
-  return useSyncExternalStore(subscribe, () => selector(store.getState()));
+  return useSyncExternalStore(
+    subscribe,
+    () => selector(store.getState()),
+    () => selector(store.getState())
+  );
 };

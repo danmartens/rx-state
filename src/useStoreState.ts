@@ -19,5 +19,5 @@ export const useStoreState = <TState, TAction extends Action>(
     [store]
   );
 
-  return useSyncExternalStore(subscribe, store.getState);
+  return useSyncExternalStore(subscribe, store.getState, store.getState);
 };
