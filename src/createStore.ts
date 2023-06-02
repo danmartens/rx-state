@@ -27,11 +27,9 @@ export const createStore =
 
     const distinctState$ = state$.pipe(distinctUntilChanged());
 
-    action$.subscribe((action) => {
-      state$.next(reducer(state$.getValue(), action));
-    });
-
     const dispatch = (action: TAction) => {
+      state$.next(reducer(state$.getValue(), action));
+
       action$.next(action);
     };
 
