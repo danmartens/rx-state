@@ -10,7 +10,7 @@ describe('createReducer', () => {
       INCREMENT: (state) => state + 1,
     });
 
-    const store = createStore(reducer)(0);
+    const store = createStore(reducer)(0, {});
 
     expect(store.getState()).toBe(0);
 

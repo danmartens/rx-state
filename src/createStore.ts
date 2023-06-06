@@ -21,7 +21,7 @@ export const createStore =
   ): StoreFactory<TState, TAction, TDependencies> =>
   (
     initialState: TState,
-    dependencies?: TDependencies
+    dependencies: TDependencies
   ): Store<TState, TAction> => {
     const state$ = new BehaviorSubject<TState>(initialState);
 

@@ -6,7 +6,7 @@ type Action = { type: 'PING' } | { type: 'PONG' };
 
 describe('createStore', () => {
   test('getState()', () => {
-    const store = createStore((state, _action) => state, [])(42);
+    const store = createStore((state, _action) => state, [])(42, {});
 
     expect(store.getState()).toEqual(42);
   });
@@ -16,7 +16,7 @@ describe('createStore', () => {
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
       []
-    )(42);
+    )(42, {});
 
     store.next({ type: 'INCREMENT' });
     store.next({ type: 'INCREMENT' });
@@ -25,7 +25,7 @@ describe('createStore', () => {
   });
 
   test('subscribe()', () => {
-    const store = createStore((state, _action) => state, [])(42);
+    const store = createStore((state, _action) => state, [])(42, {});
 
     const observer = {
       next: jest.fn(),
@@ -55,7 +55,7 @@ describe('createStore', () => {
               map(() => ({ type: 'PONG' } satisfies Action))
             ),
         ]
-      )([]);
+      )([], {});
 
       store.next({ type: 'PING' });
 
@@ -83,7 +83,7 @@ describe('createStore', () => {
               map(() => ({ type: 'PONG' } satisfies Action))
             ),
         ]
-      )([]);
+      )([], {});
 
       store.next({ type: 'PING' });
 
@@ -118,7 +118,7 @@ describe('createStore', () => {
               map(() => ({ type: 'PONG' } satisfies Action))
             ),
         ]
-      )([]);
+      )([], {});
 
       store.next({ type: 'PING' });
 
