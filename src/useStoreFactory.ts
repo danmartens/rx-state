@@ -10,7 +10,7 @@ export const useStoreFactory = <
 >(
   factory: StoreFactory<TState, TAction, TDependencies>,
   initialState: TState,
-  dependencies?: TDependencies
+  dependencies: TDependencies
 ) => {
   const [store] = useState(() => factory(initialState, dependencies));
 

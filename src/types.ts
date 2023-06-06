@@ -23,7 +23,7 @@ export type StoreFactory<
   TDependencies extends Record<string, unknown> = {}
 > = (
   initialState: TState,
-  dependencies?: TDependencies
+  dependencies: TDependencies
 ) => Store<TState, TAction>;
 
 export type Effect<
@@ -33,5 +33,5 @@ export type Effect<
 > = (
   action$: Dispatcher<TAction>,
   state$: Observable<TState>,
-  dependencies?: TDependencies
+  dependencies: TDependencies
 ) => Observable<TAction>;
