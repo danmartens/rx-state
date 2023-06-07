@@ -14,8 +14,12 @@ describe('createReducer', () => {
 
     expect(store.getState()).toBe(0);
 
+    const subscription = store.subscribe({ next: () => {} });
+
     store.next({ type: 'INCREMENT' });
 
     expect(store.getState()).toBe(1);
+
+    subscription.unsubscribe();
   });
 });

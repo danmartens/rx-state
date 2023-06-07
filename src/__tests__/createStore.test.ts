@@ -1,6 +1,7 @@
 import { filter, map, tap } from 'rxjs';
 
 import { createStore } from '../createStore';
+import { createDispatcher } from '../createDispatcher';
 
 type Action = { type: 'PING' } | { type: 'PONG' };
 
@@ -18,10 +19,14 @@ describe('createStore', () => {
       []
     )(42, {});
 
+    const subscription = store.subscribe({ next: () => {} });
+
     store.next({ type: 'INCREMENT' });
     store.next({ type: 'INCREMENT' });
 
     expect(store.getState()).toEqual(44);
+
+    subscription.unsubscribe();
   });
 
   test('subscribe()', () => {
@@ -41,6 +46,36 @@ describe('createStore', () => {
     subscription.unsubscribe();
   });
 
+  test('multiple stores can share a single dispatcher', () => {
+    const actions$ = createDispatcher<{ type: 'INCREMENT' }>();
+
+    const storeFactory = createStore(
+      (state: number, action: { type: 'INCREMENT' }) =>
+        action.type === 'INCREMENT' ? state + 1 : state,
+      [],
+      actions$
+    );
+
+    const store1 = storeFactory(42, {});
+    const store2 = storeFactory(24, {});
+
+    const subscription1 = store1.subscribe({ next: () => {} });
+    const subscription2 = store2.subscribe({ next: () => {} });
+
+    actions$.next({ type: 'INCREMENT' });
+
+    expect(store1.getState()).toEqual(43);
+    expect(store2.getState()).toEqual(25);
+
+    subscription1.unsubscribe();
+    subscription2.unsubscribe();
+
+    actions$.next({ type: 'INCREMENT' });
+
+    expect(store1.getState()).toEqual(43);
+    expect(store2.getState()).toEqual(25);
+  });
+
   describe('effects', () => {
     test('effects are only active if there is at least one subscription', () => {
       const store = createStore(
@@ -57,17 +92,15 @@ describe('createStore', () => {
         ]
       )([], {});
 
-      store.next({ type: 'PING' });
-
-      expect(store.getState()).toEqual(['PING']);
-
       const subscription = store.subscribe({ next: () => {} });
 
       store.next({ type: 'PING' });
-
-      expect(store.getState()).toEqual(['PING', 'PING', 'PONG']);
+      expect(store.getState()).toEqual(['PING', 'PONG']);
 
       subscription.unsubscribe();
+
+      store.next({ type: 'PING' });
+      expect(store.getState()).toEqual(['PING', 'PONG']);
     });
 
     test('effects are not duplicated if there are multiple subscriptions', () => {
@@ -85,19 +118,21 @@ describe('createStore', () => {
         ]
       )([], {});
 
-      store.next({ type: 'PING' });
-
-      expect(store.getState()).toEqual(['PING']);
-
       const subscription1 = store.subscribe({ next: () => {} });
       const subscription2 = store.subscribe({ next: () => {} });
 
       store.next({ type: 'PING' });
-
-      expect(store.getState()).toEqual(['PING', 'PING', 'PONG']);
+      expect(store.getState()).toEqual(['PING', 'PONG']);
 
       subscription1.unsubscribe();
+
+      store.next({ type: 'PING' });
+      expect(store.getState()).toEqual(['PING', 'PONG', 'PING', 'PONG']);
+
       subscription2.unsubscribe();
+
+      store.next({ type: 'PING' });
+      expect(store.getState()).toEqual(['PING', 'PONG', 'PING', 'PONG']);
     });
 
     test('effects are "deactivated" if there are no more subscriptions', () => {
@@ -128,19 +163,16 @@ describe('createStore', () => {
       const subscription2 = store.subscribe({ next: () => {} });
 
       store.next({ type: 'PING' });
-
       expect(actions).toEqual(['PING']);
 
       subscription1.unsubscribe();
 
       store.next({ type: 'PING' });
-
       expect(actions).toEqual(['PING', 'PING']);
 
       subscription2.unsubscribe();
 
       store.next({ type: 'PING' });
-
       expect(actions).toEqual(['PING', 'PING']);
     });
   });
