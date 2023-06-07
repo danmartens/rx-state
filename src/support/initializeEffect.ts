@@ -37,7 +37,23 @@ export const initializeEffect = <
    * used to test input actions that don't have a corresponding output action.
    */
   const dispatchImmediately = (action: TAction) => {
+    let outputError;
+
+    // Since Observables are lazy, we need to subscribe to the output$ stream
+    // before dispatching the action.
+    const subscription = output$.subscribe({
+      error: (error) => {
+        outputError = error;
+      },
+    });
+
     input$.next(action);
+
+    subscription.unsubscribe();
+
+    if (outputError != null) {
+      throw outputError;
+    }
   };
 
   /**
