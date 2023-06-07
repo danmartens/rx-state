@@ -28,12 +28,11 @@ export const createStore =
     const distinctState$ = state$.pipe(distinctUntilChanged());
 
     const dispatch = (action: TAction) => {
-      state$.next(reducer(state$.getValue(), action));
-
       action$.next(action);
     };
 
     let subscriptionCount = 0;
+    let actionsSubscription: Subscription | undefined;
     const effectSubscriptions = new Set<Subscription>();
 
     return {
@@ -42,6 +41,10 @@ export const createStore =
       },
       subscribe: (observer: Observer<TState>) => {
         if (effectSubscriptions.size === 0) {
+          actionsSubscription = action$.subscribe((action) => {
+            state$.next(reducer(state$.getValue(), action));
+          });
+
           for (const effect of effects) {
             effectSubscriptions.add(
               effect(action$, distinctState$, dependencies).subscribe(
@@ -61,6 +64,8 @@ export const createStore =
               subscriptionCount--;
 
               if (subscriptionCount === 0) {
+                actionsSubscription?.unsubscribe();
+
                 for (const subscription of effectSubscriptions) {
                   subscription.unsubscribe();
                 }
