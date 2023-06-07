@@ -7,6 +7,14 @@ type State = Readonly<{
       title: string;
     }>;
   }>;
+
+  comments: Readonly<{
+    [id: string]: Readonly<{
+      id: string;
+      postId: string;
+      content: string;
+    }>;
+  }>;
 }>;
 
 describe('createSelector', () => {
@@ -15,6 +23,7 @@ describe('createSelector', () => {
       posts: {
         1: { id: '1', title: 'First Post' },
       },
+      comments: {},
     };
 
     const getPosts = createSelector((state: State) =>
@@ -32,6 +41,7 @@ describe('createSelector', () => {
         3: { id: '3', title: 'Third Post' },
         1: { id: '1', title: 'First Post' },
       },
+      comments: {},
     };
 
     const getPosts = (state: State) => state.posts;
@@ -49,5 +59,52 @@ describe('createSelector', () => {
     ]);
 
     expect(getSortedPosts(state)).toBe(getSortedPosts(state));
+  });
+
+  test('with two input selectors', () => {
+    const state: State = {
+      posts: {
+        1: { id: '1', title: 'First Post' },
+        2: { id: '2', title: 'Second Post' },
+        3: { id: '3', title: 'Third Post' },
+      },
+      comments: {
+        1: { id: '1', postId: '3', content: 'First comment' },
+        2: { id: '2', postId: '1', content: 'Second comment' },
+        3: { id: '3', postId: '1', content: 'Third comment' },
+      },
+    };
+
+    const getPosts = (state: State) => state.posts;
+    const getComments = (state: State) => state.comments;
+
+    const getPostsAndComments = createSelector(
+      getPosts,
+      getComments,
+      (posts, comments) =>
+        Object.values(posts).map((post) => ({
+          ...post,
+          comments: Object.values(comments).filter(
+            (comment) => comment.postId === post.id
+          ),
+        }))
+    );
+
+    expect(getPostsAndComments(state)).toEqual([
+      {
+        ...state.posts['1'],
+        comments: [state.comments['2'], state.comments['3']],
+      },
+      {
+        ...state.posts['2'],
+        comments: [],
+      },
+      {
+        ...state.posts['3'],
+        comments: [state.comments['1']],
+      },
+    ]);
+
+    expect(getPostsAndComments(state)).toBe(getPostsAndComments(state));
   });
 });
