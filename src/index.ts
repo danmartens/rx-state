@@ -2,6 +2,7 @@ export { createCancelableEffect } from './createCancelableEffect';
 export { createDispatcher } from './createDispatcher';
 export { createEffect } from './createEffect';
 export { createReducer } from './createReducer';
+export { createSelector } from './createSelector';
 export { createStore } from './createStore';
 export { createStoreContext } from './createStoreContext';
 export { ofType } from './ofType';
