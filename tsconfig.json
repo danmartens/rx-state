@@ -18,5 +18,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "rollup.config.ts", "jest-setup.ts"]
+  "include": ["src", "rollup.config.ts", "jest.setup.ts"]
 }
