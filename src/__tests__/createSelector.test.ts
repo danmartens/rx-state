@@ -75,8 +75,8 @@ describe('createSelector', () => {
       },
     };
 
-    const getPosts = (state: State) => state.posts;
-    const getComments = (state: State) => state.comments;
+    const getPosts = jest.fn((state: State) => state.posts);
+    const getComments = jest.fn((state: State) => state.comments);
 
     const getPostsAndComments = createSelector(
       getPosts,
@@ -106,5 +106,15 @@ describe('createSelector', () => {
     ]);
 
     expect(getPostsAndComments(state)).toBe(getPostsAndComments(state));
+
+    expect(getPosts).toHaveBeenCalledTimes(1);
+    expect(getComments).toHaveBeenCalledTimes(1);
+
+    const nextState = { ...state };
+
+    expect(getPostsAndComments(nextState)).toBe(getPostsAndComments(nextState));
+
+    expect(getPosts).toHaveBeenCalledTimes(2);
+    expect(getComments).toHaveBeenCalledTimes(2);
   });
 });
