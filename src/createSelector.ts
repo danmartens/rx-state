@@ -25,11 +25,12 @@
  *
  * The selector above does not need to be memoized via `createSelector()`. In
  * fact, passing it into `createSelector()` will only add unnecessary overhead
- * since the result of the selector function is already an immutable value.
+ * since the result of the selector function is already "referentially stable"
+ * (i.e. it's not re-computed on each render).
  *
  * However, if the selector function is deriving a value from the store state,
- * the result of the selector function may never be referentially the same if
- * the value is non-primitive. For example:
+ * the result of the selector function may never be referentially stable if the
+ * value is non-primitive. For example:
  *
  * ```tsx
  * const ActiveUsers = () => {

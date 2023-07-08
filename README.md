@@ -180,6 +180,76 @@ postsStore.next({
 });
 ```
 
+## API
+
+### `createSelector()`
+
+Creates a memoized selector function with up to three inputs that are also
+memoized. The selector function (always the final argument) is only called when
+the inputs change.
+
+This is useful for creating functions that derive values from store state. It's
+designed to be used with the `useSelector()` hook that is created via
+`createStoreContext()`.
+
+Because the selector function passed to the `useSelector()` hook is called on
+every render and it causes the containing component to re-render when its return
+value changes, it's important to memoize the selector function if it is deriving
+a value from the store state.
+
+A selector function that is only used to extract a subset of the store state
+should not be memoized via this function. For example:
+
+```tsx
+const Session = () => {
+  const currentUser = useSelector((state: State) => state.currentUser);
+
+  // ...
+};
+```
+
+The selector above does not need to be memoized via `createSelector()`. In fact,
+passing it into `createSelector()` will only add unnecessary overhead since the
+result of the selector function is already "referentially stable" (i.e. it's not
+re-computed on each render).
+
+However, if the selector function is deriving a value from the store state, the
+result of the selector function may never be referentially stable if the value
+is non-primitive. For example:
+
+```tsx
+const ActiveUsers = () => {
+  const activeUsers = useSelector((state: State) =>
+    state.users.filter((user) => user.isActive)
+  );
+
+  // ...
+};
+```
+
+The selector above will return a new array every time any part of the state
+changes. This will cause the `ActiveUsers` component to re-render every time the
+state changes, even if the array of users is the same as it was before the state
+change.
+
+We can improve this using `createSelector()`:
+
+```tsx
+const getActiveUsers = createSelector(
+  (state: State) => state.users,
+  (users) => users.filter((user) => user.isActive)
+);
+
+const ActiveUsers = () => {
+  const activeUsers = useSelector(getActiveUsers);
+
+  // ...
+};
+```
+
+Now, the `ActiveUsers` component will only re-render when the array of users
+actually changes.
+
 ## Goals
 
 - State can only be updated by dispatching an action, which is passed to a
