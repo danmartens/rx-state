@@ -107,6 +107,9 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
   const results = new WeakMap<TState, TResult>();
 
+  let cacheHitCount = 0;
+  let cacheMissCount = 0;
+
   if (typeof arg4 === 'function') {
     const input1 = arg1 as (state: TState) => V1;
     const input2 = arg2 as (state: TState) => V2;
@@ -116,7 +119,29 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
     return (state: TState) => {
       if (results.has(state)) {
+        if (process.env.NODE_ENV !== 'production') {
+          cacheHitCount++;
+        }
+
         return results.get(state) as TResult;
+      }
+
+      if (process.env.NODE_ENV !== 'production' && options?.measure != null) {
+        cacheMissCount++;
+
+        const cacheReadCount = cacheHitCount + cacheMissCount;
+        const cacheHitRate = cacheHitCount / cacheReadCount;
+        const cacheThreshold = options.measure.cacheThreshold ?? 0.5;
+
+        if (
+          cacheReadCount > 0 &&
+          cacheReadCount % 10 === 0 &&
+          cacheHitRate < cacheThreshold
+        ) {
+          console.log(
+            `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+          );
+        }
       }
 
       let start: ReturnType<typeof performance.now> | undefined;
@@ -170,7 +195,28 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
     return (state: TState) => {
       if (results.has(state)) {
+        if (process.env.NODE_ENV !== 'production') {
+          cacheHitCount++;
+        }
+
         return results.get(state) as TResult;
+      }
+
+      if (process.env.NODE_ENV !== 'production' && options?.measure != null) {
+        cacheMissCount++;
+
+        const cacheReadCount = cacheHitCount + cacheMissCount;
+
+        if (cacheReadCount > 0) {
+          const cacheHitRate = cacheHitCount / cacheReadCount;
+          const cacheThreshold = options.measure.cacheThreshold ?? 0.5;
+
+          if (cacheReadCount % 10 === 0 && cacheHitRate < cacheThreshold) {
+            console.log(
+              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+            );
+          }
+        }
       }
 
       let start: ReturnType<typeof performance.now> | undefined;
@@ -215,7 +261,28 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
     return (state: TState) => {
       if (results.has(state)) {
+        if (process.env.NODE_ENV !== 'production') {
+          cacheHitCount++;
+        }
+
         return results.get(state) as TResult;
+      }
+
+      if (process.env.NODE_ENV !== 'production' && options?.measure != null) {
+        cacheMissCount++;
+
+        const cacheReadCount = cacheHitCount + cacheMissCount;
+
+        if (cacheReadCount > 0) {
+          const cacheHitRate = cacheHitCount / cacheReadCount;
+          const cacheThreshold = options.measure.cacheThreshold ?? 0.5;
+
+          if (cacheReadCount % 10 === 0 && cacheHitRate < cacheThreshold) {
+            console.log(
+              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+            );
+          }
+        }
       }
 
       let start: ReturnType<typeof performance.now> | undefined;
@@ -251,27 +318,50 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
     const options = arg2;
 
     return (state: TState) => {
-      if (!results.has(state)) {
-        let start: ReturnType<typeof performance.now> | undefined;
-
-        if (
-          process.env.NODE_ENV !== 'production' &&
-          typeof performance !== 'undefined' &&
-          options?.measure != null
-        ) {
-          start = performance.now();
+      if (results.has(state)) {
+        if (process.env.NODE_ENV !== 'production') {
+          cacheHitCount++;
         }
-        results.set(state, selector(state));
 
-        if (
-          process.env.NODE_ENV !== 'production' &&
-          typeof performance !== 'undefined' &&
-          options?.measure != null
-        ) {
-          performance.measure(options.measure.name, {
-            start,
-          });
+        return results.get(state) as TResult;
+      }
+
+      if (process.env.NODE_ENV !== 'production' && options?.measure != null) {
+        cacheMissCount++;
+
+        const cacheReadCount = cacheHitCount + cacheMissCount;
+
+        if (cacheReadCount > 0) {
+          const cacheHitRate = cacheHitCount / cacheReadCount;
+          const cacheThreshold = options.measure.cacheThreshold ?? 0.5;
+
+          if (cacheReadCount % 10 === 0 && cacheHitRate < cacheThreshold) {
+            console.log(
+              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+            );
+          }
         }
+      }
+
+      let start: ReturnType<typeof performance.now> | undefined;
+
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        typeof performance !== 'undefined' &&
+        options?.measure != null
+      ) {
+        start = performance.now();
+      }
+      results.set(state, selector(state));
+
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        typeof performance !== 'undefined' &&
+        options?.measure != null
+      ) {
+        performance.measure(options.measure.name, {
+          start,
+        });
       }
 
       return results.get(state) as TResult;
@@ -282,5 +372,6 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 interface Options {
   measure?: {
     name: string;
+    cacheThreshold?: number;
   };
 }
