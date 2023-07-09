@@ -1,5 +1,5 @@
 import { compose } from '../compose';
-import { createSelector } from '../createSelector';
+import { createSelector } from '../../createSelector';
 
 type OrderState = {
   number: string;

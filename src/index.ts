@@ -12,6 +12,7 @@ export { useStoreFactory } from './useStoreFactory';
 export { useStoreSelector } from './useStoreSelector';
 export { useStoreState } from './useStoreState';
 
+export { compose } from './utils/compose';
 export { filter } from './utils/filter';
 export { getIn } from './utils/getIn';
 export { insert } from './utils/insert';
@@ -28,4 +29,4 @@ export { updateIn } from './utils/updateIn';
 
 export { initializeEffect } from './support/initializeEffect';
 
-export type { Store, StoreFactory, Action, Effect } from './types';
+export type { Action, Effect, Store, StoreFactory } from './types';
