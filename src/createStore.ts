@@ -9,6 +9,10 @@ import {
 import { Action, Dispatcher, Effect, Store, StoreFactory } from './types';
 import { createDispatcher } from './createDispatcher';
 
+interface Options<TAction extends Action> {
+  action$?: Dispatcher<TAction>;
+}
+
 export const createStore =
   <
     TState,
@@ -17,13 +21,14 @@ export const createStore =
   >(
     reducer: (state: TState, action: TAction) => TState,
     effects: Effect<TAction, TState, TDependencies>[] = [],
-    action$: Dispatcher<TAction> = createDispatcher()
+    options: Options<TAction> = {}
   ): StoreFactory<TState, TAction, TDependencies> =>
   (
     initialState: TState,
     dependencies: TDependencies
   ): Store<TState, TAction> => {
     const state$ = new BehaviorSubject<TState>(initialState);
+    const action$ = options.action$ ?? createDispatcher<TAction>();
 
     const distinctState$ = state$.pipe(distinctUntilChanged());
 
