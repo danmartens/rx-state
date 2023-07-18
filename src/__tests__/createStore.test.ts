@@ -47,13 +47,13 @@ describe('createStore', () => {
   });
 
   test('multiple stores can share a single dispatcher', () => {
-    const actions$ = createDispatcher<{ type: 'INCREMENT' }>();
+    const action$ = createDispatcher<{ type: 'INCREMENT' }>();
 
     const storeFactory = createStore(
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
       [],
-      actions$
+      { action$ }
     );
 
     const store1 = storeFactory(42, {});
@@ -62,7 +62,7 @@ describe('createStore', () => {
     const subscription1 = store1.subscribe({ next: () => {} });
     const subscription2 = store2.subscribe({ next: () => {} });
 
-    actions$.next({ type: 'INCREMENT' });
+    action$.next({ type: 'INCREMENT' });
 
     expect(store1.getState()).toEqual(43);
     expect(store2.getState()).toEqual(25);
@@ -70,7 +70,7 @@ describe('createStore', () => {
     subscription1.unsubscribe();
     subscription2.unsubscribe();
 
-    actions$.next({ type: 'INCREMENT' });
+    action$.next({ type: 'INCREMENT' });
 
     expect(store1.getState()).toEqual(43);
     expect(store2.getState()).toEqual(25);
