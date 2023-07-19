@@ -44,7 +44,7 @@ export const createStore =
       } else if (logging?.actions != null) {
         if (
           (typeof logging.actions === 'function' && logging.actions(action)) ||
-          logging.actions
+          logging.actions === true
         ) {
           console.group(`Action (${logging.name}): ${action.type}`);
           console.log(action);
