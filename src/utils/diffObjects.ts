@@ -1,11 +1,9 @@
-type Changeset<T extends Record<string, unknown>> = {
+import { isRecord } from './isRecord';
+
+export type Changeset<T extends Record<string, unknown>> = {
   [K in keyof T]?: T[K] extends Record<string, unknown>
     ? Changeset<T[K]>
     : [T[K], T[K]];
-};
-
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null;
 };
 
 export const diffObjects = <T extends Readonly<Record<string, unknown>>>(

@@ -8,12 +8,16 @@ import {
 
 import { Action, Dispatcher, Effect, Store, StoreFactory } from './types';
 import { createDispatcher } from './createDispatcher';
+import { formatChangeset } from './utils/formatChangeset';
+import { diffObjects } from './utils/diffObjects';
+import { isRecord } from './utils/isRecord';
 
-interface Options<TAction extends Action> {
+interface Options<TState, TAction extends Action> {
   action$?: Dispatcher<TAction>;
   logging?: {
     name: string;
     actions?: boolean | ((action: TAction) => boolean);
+    state?: boolean | ((state: TState) => boolean);
   };
 }
 
@@ -25,7 +29,7 @@ export const createStore =
   >(
     reducer: (state: TState, action: TAction) => TState,
     effects: Effect<TAction, TState, TDependencies>[] = [],
-    options: Options<TAction> = {}
+    options: Options<TState, TAction> = {}
   ): StoreFactory<TState, TAction, TDependencies> =>
   (
     initialState: TState,
@@ -60,6 +64,20 @@ export const createStore =
       }
     };
 
+    const logState = (state: TState, nextState: TState) => {
+      if (process.env.NODE_ENV !== 'production' && logging?.state != null) {
+        if (
+          state !== nextState &&
+          ((typeof logging.state === 'function' && logging.state(nextState)) ||
+            logging.state === true)
+        ) {
+          if (isRecord(state) && isRecord(nextState)) {
+            console.log(formatChangeset(diffObjects(state, nextState)));
+          }
+        }
+      }
+    };
+
     const dispatch = (action: TAction) => {
       action$.next(action);
     };
@@ -76,7 +94,12 @@ export const createStore =
         if (effectSubscriptions.size === 0) {
           actionsSubscription = action$.subscribe((action) => {
             logAction(action, () => {
-              state$.next(reducer(state$.getValue(), action));
+              const state = state$.getValue();
+              const nextState = reducer(state, action);
+
+              state$.next(nextState);
+
+              logState(state, nextState);
             });
           });
 
