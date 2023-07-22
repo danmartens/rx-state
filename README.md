@@ -182,39 +182,15 @@ postsStore.next({
 
 ## API
 
-### `createStore(reducer, effects?, action$?)`
-
-Returns a function that accepts an `initialState` and an optional `dependencies`
-object (for effects).
-
-```tsx
-createStore<S, A, D>(reducer: (state: S, action: A) => state, effects: Effect<S, A, D>[], action$?: Observable<A>): (initialState: S, dependencies: D) => Store<S, A, D>`
-```
-
-#### `reducer: (state: S, action: A) => S`
-
-The reducer function is responsible for updating state whenever an action is
-dispatched. Just like with Redux, the state must be immutable and the reducer
-function must be pure (repeatedly calling the reducer with the same state and
-action inputs should always produce the same output).
-
-#### `effects: Effect<S, A, D>[]`
-
-TODO: Document this argument
-
-#### `action$: Observable<A>`
-
-TODO: Document this argument
-
-### `createStoreContext()`
-
-TODO: Document this function
-
-### `createReducer()`
+### `createDispatcher()`
 
 TODO: Document this function
 
 ### `createEffect()`
+
+TODO: Document this function
+
+### `createReducer()`
 
 TODO: Document this function
 
@@ -286,9 +262,77 @@ const ActiveUsers = () => {
 Now, the `ActiveUsers` component will only re-render when the array of users
 actually changes.
 
-### Immutability Helpers
+### `createStore(reducer, effects?, action$?)`
 
-#### `set(target, key, value)`
+Returns a function that accepts an `initialState` and an optional `dependencies`
+object (for effects).
+
+```tsx
+createStore<S, A, D>(reducer: (state: S, action: A) => state, effects: Effect<S, A, D>[], action$?: Observable<A>): (initialState: S, dependencies: D) => Store<S, A, D>`
+```
+
+#### `reducer: (state: S, action: A) => S`
+
+The reducer function is responsible for updating state whenever an action is
+dispatched. Just like with Redux, the state must be immutable and the reducer
+function must be pure (repeatedly calling the reducer with the same state and
+action inputs should always produce the same output).
+
+#### `effects: Effect<S, A, D>[]`
+
+TODO: Document this argument
+
+#### `action$: Observable<A>`
+
+TODO: Document this argument
+
+### `createStoreContext()`
+
+TODO: Document this function
+
+### `mapActions()`
+
+TODO: Document this function
+
+## Immutability Helpers
+
+### `filter(target, predicate)`
+
+```tsx
+filter([1, 2, 3, 4], (n) => n % 2 === 0);
+
+// => [2, 4]
+```
+
+### `map(target, callback)`
+
+```tsx
+map([1, 2, 3], (n) => n * 2);
+
+// => [2, 4, 6]
+```
+
+### `mapEntries(target, callback)`
+
+TODO: Document this function
+
+### `merge(target, value)`
+
+```tsx
+merge({ a: 1, b: 2 }, { a: 42 });
+
+// => { a: 42, b: 2 }
+```
+
+### `push(target, value)`
+
+```tsx
+push([1, 2], 3);
+
+// => [1, 2, 3]
+```
+
+### `set(target, key, value)`
 
 ```tsx
 set({ value: 42 }, 'value', 84);
@@ -296,7 +340,7 @@ set({ value: 42 }, 'value', 84);
 // => { value: 84 }
 ```
 
-#### `setIn(target, ...keys, value)`
+### `setIn(target, ...keys, value)`
 
 ```tsx
 setIn({ nested: { value: 42 } }, 'nested', 'value', 84);
@@ -304,7 +348,11 @@ setIn({ nested: { value: 42 } }, 'nested', 'value', 84);
 // => { nested: { value: 84 } }
 ```
 
-#### `updateIn(target, ...keys, updater)`
+### `splice()`
+
+TODO: Document this function
+
+### `updateIn(target, ...keys, updater)`
 
 ```tsx
 updateIn({ nested: { value: 42 } }, 'nested', 'value', (value) => value * 2);
@@ -312,33 +360,13 @@ updateIn({ nested: { value: 42 } }, 'nested', 'value', (value) => value * 2);
 // => { nested: { value: 84 } }
 ```
 
-#### `map(target, callback)`
+### `union(target, value)`
 
-TODO: Document this function
+```tsx
+union([1, 2, 3], [2, 4]);
 
-#### `merge(target, value)`
-
-TODO: Document this function
-
-#### `push(target, value)`
-
-TODO: Document this function
-
-#### `filter(target, predicate)`
-
-TODO: Document this function
-
-#### `mapEntries(target, callback)`
-
-TODO: Document this function
-
-#### `union(target, value)`
-
-TODO: Document this function
-
-#### `splice()`
-
-TODO: Document this function
+// => [1, 2, 3, 4]
+```
 
 ## Goals
 
