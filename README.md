@@ -464,6 +464,17 @@ union([1, 2, 3], [2, 4]);
 // => [1, 2, 3, 4]
 ```
 
+## Influences
+
+RxState is heavily inspired by my experiences with the following libraries and
+it wouldn't be what it is without them.
+
+- [Redux](https://redux.js.org)
+- [Redux Observable](https://redux-observable.js.org)
+- [Reselect](https://github.com/reduxjs/reselect)
+- [Recoil](https://redux.js.org)
+- [Immutable.js](https://immutable-js.com)
+
 ## Goals
 
 - State can only be updated by dispatching an action, which is passed to a
@@ -477,3 +488,9 @@ union([1, 2, 3], [2, 4]);
 - Side-effect Observables can have dependencies, which are passed in when the
   store is initialized (and therefore can be derived from props or hooks)
 - Redux-like boilerplate is limited as much as possible
+
+## Non-goals
+
+- This library is not intended to replace data fetching libraries like SWR,
+  React Query, Apollo Client, URQL, etc. It does, however, compliment them quite
+  well.
