@@ -33,7 +33,7 @@ export function updateIn<
   key1: K1,
   key2: K2,
   key3: K3,
-  key4: K3,
+  key4: K4,
   updater: Updater<T[K1][K2][K3][K4]>
 ): T;
 
