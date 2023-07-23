@@ -184,7 +184,103 @@ postsStore.next({
 
 ### `createDispatcher()`
 
-TODO: Document this function
+By default, creating a store also creates an observable for dispatching actions
+(via `store.next()`). Sometimes it's useful for the dispatcher (essentially just
+an RxJS Subject) to be external so that it can be subscribed to by multiple
+stores.
+
+For example, it might be useful to have a global "notifications" store that
+other stores can dispatch to (via effects):
+
+```tsx
+import { createDispatcher } from '@danmartens/rx-state';
+
+type NotificationsState = { message: string }[];
+type PostsState = Record<string, { title: string; body: string }>;
+
+type Action =
+  | ShowNotification
+  | CreatePostAction
+  | CreatePostSuccessAction
+  | CreatePostErrorAction;
+
+interface ShowNotificationAction {
+  type: 'SHOW_NOTIFICATION';
+  message: string;
+}
+
+interface CreatePostAction {
+  type: 'CREATE_POST';
+  title: string;
+  body: string;
+}
+
+interface CreatePostSuccessAction {
+  type: 'CREATE_POST_SUCCESS';
+}
+
+interface CreatePostErrorAction {
+  type: 'CREATE_POST_ERROR';
+}
+
+const action$ = createDispatcher<Action>();
+
+const notificationsStore = createStore<{ message: string }[], Action>(
+  (state, action) => {
+    // ...
+
+    return state;
+  },
+  [],
+  {
+    action$,
+  }
+);
+
+const postsStore = createStore<State, Action>(
+  (state, action) => {
+    // ...
+
+    return state;
+  },
+  [
+    (action$) => {
+      return action$.pipe(
+        ofType('CREATE_POST_SUCCESS' as const, 'CREATE_POST_ERROR' as const),
+        map((action) => {
+          switch (action.type) {
+            case 'CREATE_POST_SUCCESS': {
+              return {
+                type: 'SHOW_NOTIFICATION',
+                message: 'Post created successfully',
+              };
+            }
+
+            case 'CREATE_POST_ERROR': {
+              return {
+                type: 'SHOW_NOTIFICATION',
+                message: 'Failed to create post',
+              };
+            }
+          }
+        })
+      );
+    },
+  ],
+  {
+    action$,
+  }
+)({});
+```
+
+Now when a post is created or fails to be created, the `postsStore` will
+dispatch a `SHOW_NOTIFICATION` action that the `notificationsStore` will
+receive.
+
+_NOTE: When multiple stores share the same dispatcher, all dispatched actions
+will be received by all subscribed stores. It's important that you return the
+current state at the end of every reducer function unless you are explicitly
+handling all actions in each reducer._
 
 ### `createEffect()`
 
