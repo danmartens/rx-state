@@ -472,7 +472,7 @@ it wouldn't be what it is without them.
 - [Redux](https://redux.js.org)
 - [Redux Observable](https://redux-observable.js.org)
 - [Reselect](https://github.com/reduxjs/reselect)
-- [Recoil](https://redux.js.org)
+- [Recoil](https://recoiljs.org)
 - [Immutable.js](https://immutable-js.com)
 
 ## Goals
