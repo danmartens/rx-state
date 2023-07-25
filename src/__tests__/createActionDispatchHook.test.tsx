@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
-import { render, act } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
+import { render, act } from '@testing-library/react';
+import React, { ReactNode } from 'react';
 
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';

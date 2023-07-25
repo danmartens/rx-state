@@ -6,10 +6,10 @@ import {
   finalize,
 } from 'rxjs';
 
-import { Action, Dispatcher, Effect, Store, StoreFactory } from './types';
 import { createDispatcher } from './createDispatcher';
-import { formatChangeset } from './utils/formatChangeset';
+import { Action, Dispatcher, Effect, Store, StoreFactory } from './types';
 import { diffObjects } from './utils/diffObjects';
+import { formatChangeset } from './utils/formatChangeset';
 import { isRecord } from './utils/isRecord';
 
 interface Options<TState, TAction extends Action> {

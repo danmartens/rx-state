@@ -1,13 +1,13 @@
 import { filter, map, tap } from 'rxjs';
 
-import { createStore } from '../createStore';
 import { createDispatcher } from '../createDispatcher';
+import { createStore } from '../createStore';
 
 type Action = { type: 'PING' } | { type: 'PONG' };
 
 describe('createStore', () => {
   test('getState()', () => {
-    const store = createStore((state, _action) => state, [])(42, {});
+    const store = createStore((state) => state, [])(42, {});
 
     expect(store.getState()).toEqual(42);
   });
@@ -30,7 +30,7 @@ describe('createStore', () => {
   });
 
   test('subscribe()', () => {
-    const store = createStore((state, _action) => state, [])(42, {});
+    const store = createStore((state) => state, [])(42, {});
 
     const observer = {
       next: jest.fn(),

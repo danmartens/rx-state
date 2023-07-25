@@ -1,12 +1,12 @@
-import { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { ReactNode } from 'react';
 
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';
 
 describe('createStoreContext', () => {
   test('useSelector()', () => {
-    const storeFactory = createStore((state: number, _action) => state, []);
+    const storeFactory = createStore((state: number) => state, []);
 
     const Context = createStoreContext(storeFactory);
 

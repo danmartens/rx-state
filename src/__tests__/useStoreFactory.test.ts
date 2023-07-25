@@ -1,13 +1,11 @@
 import { renderHook } from '@testing-library/react-hooks';
+
 import { createStore } from '../createStore';
 import { useStoreFactory } from '../useStoreFactory';
 
 describe('useStoreFactory()', () => {
   test('changing the initial state argument does not change the state', () => {
-    const factory = createStore(
-      (state: { message: string }, _action) => state,
-      []
-    );
+    const factory = createStore((state: { message: string }) => state, []);
 
     const initialState = { message: 'Hello' };
     const stateRef = { current: initialState };

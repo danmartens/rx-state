@@ -35,6 +35,8 @@ jobs:
 
       - run: yarn test
 
+      - run: yarn lint:check
+
       - run: yarn prettier:check
 
       - name: Build
