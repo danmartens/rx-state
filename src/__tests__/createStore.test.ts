@@ -29,21 +29,43 @@ describe('createStore', () => {
     subscription.unsubscribe();
   });
 
-  test('subscribe()', () => {
-    const store = createStore((state, _action) => state, [])(42, {});
+  describe('subscribe()', () => {
+    test('dispatching multiple actions within the same event loop only results in one state update', () => {
+      const store = createStore((state, _action) => state, [])(42, {});
 
-    const observer = {
-      next: jest.fn(),
-    };
+      const observer = {
+        next: jest.fn(),
+      };
 
-    const subscription = store.subscribe(observer);
+      const subscription = store.subscribe(observer);
 
-    store.next({ type: 'INCREMENT' });
-    store.next({ type: 'INCREMENT' });
+      store.next({ type: 'INCREMENT' });
+      store.next({ type: 'INCREMENT' });
 
-    expect(observer.next).toHaveBeenCalledTimes(1);
+      expect(observer.next).toHaveBeenCalledTimes(1);
 
-    subscription.unsubscribe();
+      subscription.unsubscribe();
+    });
+
+    test('creating multiple subscriptions does not cause actions to be dispatched multiple times', () => {
+      const reducer = jest.fn((state, _action) => state);
+
+      const store = createStore(reducer, [])(42, {});
+
+      const observer = {
+        next: jest.fn(),
+      };
+
+      const subscriptionA = store.subscribe(observer);
+      const subscriptionB = store.subscribe(observer);
+
+      store.next({ type: 'INCREMENT' });
+
+      expect(reducer).toHaveBeenCalledTimes(1);
+
+      subscriptionA.unsubscribe();
+      subscriptionB.unsubscribe();
+    });
   });
 
   test('multiple stores can share a single dispatcher', () => {

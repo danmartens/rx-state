@@ -83,7 +83,7 @@ export const createStore =
     };
 
     let subscriptionCount = 0;
-    let actionsSubscription: Subscription | undefined;
+    let actionsSubscription: Subscription | null = null;
     const effectSubscriptions = new Set<Subscription>();
 
     return {
@@ -91,7 +91,7 @@ export const createStore =
         dispatch(action);
       },
       subscribe: (observer: Observer<TState>) => {
-        if (effectSubscriptions.size === 0) {
+        if (actionsSubscription == null) {
           actionsSubscription = action$.subscribe((action) => {
             logAction(action, () => {
               const state = state$.getValue();
@@ -102,7 +102,9 @@ export const createStore =
               logState(state, nextState);
             });
           });
+        }
 
+        if (effectSubscriptions.size === 0) {
           for (const effect of effects) {
             effectSubscriptions.add(
               effect(action$, distinctState$, dependencies).subscribe(
@@ -123,6 +125,7 @@ export const createStore =
 
               if (subscriptionCount === 0) {
                 actionsSubscription?.unsubscribe();
+                actionsSubscription = null;
 
                 for (const subscription of effectSubscriptions) {
                   subscription.unsubscribe();
