@@ -17,6 +17,8 @@ interface Options<TState, TAction extends Action> {
    * If true, the store will update its state and run effects even if there are
    * no subscribers. By default, stores are lazy (cold observables) and will
    * only update their state and run effects when there are subscribers.
+   *
+   * See: https://benlesh.medium.com/hot-vs-cold-observables-f8094ed53339
    */
   hot?: boolean;
   action$?: Dispatcher<TAction>;
