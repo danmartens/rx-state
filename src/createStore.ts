@@ -13,6 +13,14 @@ import { diffObjects } from './utils/diffObjects';
 import { isRecord } from './utils/isRecord';
 
 interface Options<TState, TAction extends Action> {
+  /**
+   * If true, the store will update its state and run effects even if there are
+   * no subscribers. By default, stores are lazy (cold observables) and will
+   * only update their state and run effects when there are subscribers.
+   *
+   * See: https://benlesh.medium.com/hot-vs-cold-observables-f8094ed53339
+   */
+  hot?: boolean;
   action$?: Dispatcher<TAction>;
   logging?: {
     name: string;
@@ -40,7 +48,7 @@ export const createStore =
 
     const action$ = options.action$ ?? createDispatcher<TAction>();
 
-    const { logging } = options;
+    const { hot = false, logging } = options;
 
     const logAction = (action: TAction, callbackFn: () => void) => {
       if (process.env.NODE_ENV === 'production') {
@@ -86,35 +94,47 @@ export const createStore =
     let actionsSubscription: Subscription | null = null;
     const effectSubscriptions = new Set<Subscription>();
 
+    const createActionsSubscription = () => {
+      if (actionsSubscription == null) {
+        actionsSubscription = action$.subscribe((action) => {
+          logAction(action, () => {
+            const state = state$.getValue();
+            const nextState = reducer(state, action);
+
+            state$.next(nextState);
+
+            logState(state, nextState);
+          });
+        });
+      }
+    };
+
+    const createEffectsSubscription = () => {
+      if (effectSubscriptions.size === 0) {
+        for (const effect of effects) {
+          effectSubscriptions.add(
+            effect(action$, distinctState$, dependencies).subscribe(
+              (action) => {
+                dispatch(action);
+              }
+            )
+          );
+        }
+      }
+    };
+
+    if (hot) {
+      createActionsSubscription();
+      createEffectsSubscription();
+    }
+
     return {
       next: (action: TAction) => {
         dispatch(action);
       },
       subscribe: (observer: Observer<TState>) => {
-        if (actionsSubscription == null) {
-          actionsSubscription = action$.subscribe((action) => {
-            logAction(action, () => {
-              const state = state$.getValue();
-              const nextState = reducer(state, action);
-
-              state$.next(nextState);
-
-              logState(state, nextState);
-            });
-          });
-        }
-
-        if (effectSubscriptions.size === 0) {
-          for (const effect of effects) {
-            effectSubscriptions.add(
-              effect(action$, distinctState$, dependencies).subscribe(
-                (action) => {
-                  dispatch(action);
-                }
-              )
-            );
-          }
-        }
+        createActionsSubscription();
+        createEffectsSubscription();
 
         subscriptionCount++;
 
@@ -123,7 +143,7 @@ export const createStore =
             finalize(() => {
               subscriptionCount--;
 
-              if (subscriptionCount === 0) {
+              if (!hot && subscriptionCount === 0) {
                 actionsSubscription?.unsubscribe();
                 actionsSubscription = null;
 

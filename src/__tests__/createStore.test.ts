@@ -157,45 +157,91 @@ describe('createStore', () => {
       expect(store.getState()).toEqual(['PING', 'PONG', 'PING', 'PONG']);
     });
 
-    test('effects are "deactivated" if there are no more subscriptions', () => {
-      const actions: Array<Action['type']> = [];
+    describe('"cold" store', () => {
+      test('effects are "deactivated" if there are no more subscriptions', () => {
+        const actions: Array<Action['type']> = [];
 
-      const store = createStore(
-        (state: ReadonlyArray<Action['type']>, action: Action) => [
-          ...state,
-          action.type,
-        ],
-        [
-          (action$) =>
-            action$.pipe(
-              filter((action) => action.type === 'PING'),
-              tap((action) => {
-                actions.push(action.type);
-              }),
-              map(() => ({ type: 'PONG' } satisfies Action))
-            ),
-        ]
-      )([], {});
+        const store = createStore(
+          (state: ReadonlyArray<Action['type']>, action: Action) => [
+            ...state,
+            action.type,
+          ],
+          [
+            (action$) =>
+              action$.pipe(
+                filter((action) => action.type === 'PING'),
+                tap((action) => {
+                  actions.push(action.type);
+                }),
+                map(() => ({ type: 'PONG' } satisfies Action))
+              ),
+          ]
+        )([], {});
 
-      store.next({ type: 'PING' });
+        store.next({ type: 'PING' });
 
-      expect(actions).toEqual([]);
+        expect(actions).toEqual([]);
 
-      const subscription1 = store.subscribe({ next: () => {} });
-      const subscription2 = store.subscribe({ next: () => {} });
+        const subscription1 = store.subscribe({ next: () => {} });
+        const subscription2 = store.subscribe({ next: () => {} });
 
-      store.next({ type: 'PING' });
-      expect(actions).toEqual(['PING']);
+        store.next({ type: 'PING' });
+        expect(actions).toEqual(['PING']);
 
-      subscription1.unsubscribe();
+        subscription1.unsubscribe();
 
-      store.next({ type: 'PING' });
-      expect(actions).toEqual(['PING', 'PING']);
+        store.next({ type: 'PING' });
+        expect(actions).toEqual(['PING', 'PING']);
 
-      subscription2.unsubscribe();
+        subscription2.unsubscribe();
 
-      store.next({ type: 'PING' });
-      expect(actions).toEqual(['PING', 'PING']);
+        store.next({ type: 'PING' });
+        expect(actions).toEqual(['PING', 'PING']);
+      });
+    });
+
+    describe('"hot" store', () => {
+      test('effects are not "deactivated" if there are no more subscriptions', () => {
+        const actions: Array<Action['type']> = [];
+
+        const store = createStore(
+          (state: ReadonlyArray<Action['type']>, action: Action) => [
+            ...state,
+            action.type,
+          ],
+          [
+            (action$) =>
+              action$.pipe(
+                filter((action) => action.type === 'PING'),
+                tap((action) => {
+                  actions.push(action.type);
+                }),
+                map(() => ({ type: 'PONG' } satisfies Action))
+              ),
+          ],
+          { hot: true }
+        )([], {});
+
+        store.next({ type: 'PING' });
+
+        expect(actions).toEqual(['PING']);
+
+        const subscription1 = store.subscribe({ next: () => {} });
+        const subscription2 = store.subscribe({ next: () => {} });
+
+        store.next({ type: 'PING' });
+        expect(actions).toEqual(['PING', 'PING']);
+
+        subscription1.unsubscribe();
+
+        store.next({ type: 'PING' });
+        expect(actions).toEqual(['PING', 'PING', 'PING']);
+
+        subscription2.unsubscribe();
+
+        store.next({ type: 'PING' });
+        expect(actions).toEqual(['PING', 'PING', 'PING', 'PING']);
+      });
     });
   });
 });
