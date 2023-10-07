@@ -57,6 +57,14 @@ export type Effect<
 ) => Observable<TAction>;
 
 export interface StoreOptions<TState> {
+  logging?: {
+    name: string;
+    state?: boolean | ((state: TState) => boolean);
+    status?: boolean;
+  };
+}
+
+export interface ReducerStoreOptions<TState, TAction extends Action> {
   /**
    * If true, the store will update its state and run effects even if there are
    * no subscribers. By default, stores are lazy (cold observables) and will
@@ -65,14 +73,6 @@ export interface StoreOptions<TState> {
    * See: https://benlesh.medium.com/hot-vs-cold-observables-f8094ed53339
    */
   hot?: boolean;
-  logging?: {
-    name: string;
-    state?: boolean | ((state: TState) => boolean);
-  };
-}
-
-export interface ReducerStoreOptions<TState, TAction extends Action>
-  extends StoreOptions<TState> {
   action$?: Dispatcher<TAction>;
   logging?: {
     name: string;

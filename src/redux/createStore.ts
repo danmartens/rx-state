@@ -29,7 +29,7 @@ export function createStore<TState>(
 
   let setSubscription: Subscription | null = null;
 
-  const { hot = false, logging } = options;
+  const { logging } = options;
 
   const logState = (state: TState, nextState: TState) => {
     if (process.env.NODE_ENV !== 'production' && logging?.state != null) {
@@ -40,9 +40,19 @@ export function createStore<TState>(
       ) {
         if (isRecord(state) && isRecord(nextState)) {
           console.log(formatChangeset(diffObjects(state, nextState)));
+        } else {
+          console.log(`State (${logging.name}): ${state} => ${nextState}`);
         }
       }
     }
+  };
+
+  const setStatus = (nextStatus: StoreStatus) => {
+    if (nextStatus !== status && logging?.status) {
+      console.log(`Status (${logging.name}): ${nextStatus}`);
+    }
+
+    status = nextStatus;
   };
 
   const next = (state: TState) => {
@@ -58,13 +68,15 @@ export function createStore<TState>(
 
     if (get == null) {
       getPromise = Promise.resolve(state$.getValue());
-      status = StoreStatus.HasValue;
+
+      setStatus(StoreStatus.HasValue);
     } else {
       const promiseOrValue = get();
 
       if (promiseOrValue instanceof Promise) {
         getPromise = promiseOrValue;
-        status = StoreStatus.Loading;
+
+        setStatus(StoreStatus.Loading);
 
         getSubscription = from(promiseOrValue).subscribe({
           next: (value) => {
@@ -81,8 +93,8 @@ export function createStore<TState>(
         });
       } else {
         getPromise = Promise.resolve(promiseOrValue);
-        status = StoreStatus.HasValue;
 
+        setStatus(StoreStatus.HasValue);
         next(promiseOrValue);
       }
     }
@@ -98,8 +110,7 @@ export function createStore<TState>(
       getSubscription = null;
       setSubscription = null;
 
-      status = StoreStatus.HasValue;
-
+      setStatus(StoreStatus.HasValue);
       next(value);
 
       if (set != null) {
@@ -128,7 +139,7 @@ export function createStore<TState>(
 
             if (subscriptionCount === 0) {
               if (status === StoreStatus.Loading) {
-                status = StoreStatus.Initial;
+                setStatus(StoreStatus.Initial);
               }
 
               getSubscription?.unsubscribe();
