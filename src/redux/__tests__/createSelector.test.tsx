@@ -86,6 +86,7 @@ describe('createSelector', () => {
   test('works with reducer stores', async () => {
     const n1 = createReducerStore(
       0,
+      {},
       (state: number, action: { type: 'INCREMENT' | 'DECREMENT' }) => {
         switch (action.type) {
           case 'INCREMENT':

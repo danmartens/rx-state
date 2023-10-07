@@ -1,12 +1,24 @@
-import { BehaviorSubject, Subscription, finalize, from } from 'rxjs';
-import { Store, StoreStatus } from './types';
+import {
+  BehaviorSubject,
+  Subscription,
+  distinctUntilChanged,
+  finalize,
+  from,
+} from 'rxjs';
+
+import { diffObjects } from '../utils/diffObjects';
+import { formatChangeset } from '../utils/formatChangeset';
+import { isRecord } from '../utils/isRecord';
+import { Store, StoreOptions, StoreStatus } from './types';
 
 export function createStore<TState>(
   initialState: TState,
   get?: () => TState | Promise<TState>,
-  set?: (value: TState) => Promise<TState> | TState | void
+  set?: (value: TState) => Promise<TState> | TState | void,
+  options: StoreOptions<TState> = {}
 ): Store<TState> {
   const state$ = new BehaviorSubject(initialState);
+  const distinctState$ = state$.pipe(distinctUntilChanged());
 
   let status = get != null ? StoreStatus.Initial : StoreStatus.HasValue;
   let subscriptionCount = 0;
@@ -16,6 +28,28 @@ export function createStore<TState>(
   let getError: Error | null = null;
 
   let setSubscription: Subscription | null = null;
+
+  const { hot = false, logging } = options;
+
+  const logState = (state: TState, nextState: TState) => {
+    if (process.env.NODE_ENV !== 'production' && logging?.state != null) {
+      if (
+        state !== nextState &&
+        ((typeof logging.state === 'function' && logging.state(nextState)) ||
+          logging.state === true)
+      ) {
+        if (isRecord(state) && isRecord(nextState)) {
+          console.log(formatChangeset(diffObjects(state, nextState)));
+        }
+      }
+    }
+  };
+
+  const next = (state: TState) => {
+    logState(state$.getValue(), state);
+
+    state$.next(state);
+  };
 
   const load = (): Promise<TState> => {
     if (getPromise != null && status !== StoreStatus.Initial) {
@@ -36,9 +70,7 @@ export function createStore<TState>(
           next: (value) => {
             status = StoreStatus.HasValue;
 
-            if (value !== state$.getValue()) {
-              state$.next(value);
-            }
+            next(value);
           },
           error: (error) => {
             if (status === StoreStatus.Loading) {
@@ -49,9 +81,9 @@ export function createStore<TState>(
         });
       } else {
         getPromise = Promise.resolve(promiseOrValue);
-
         status = StoreStatus.HasValue;
-        state$.next(promiseOrValue);
+
+        next(promiseOrValue);
       }
     }
 
@@ -59,13 +91,13 @@ export function createStore<TState>(
   };
 
   return {
-    next(value) {
+    next: (value) => {
       getSubscription?.unsubscribe();
       setSubscription?.unsubscribe();
 
       status = StoreStatus.HasValue;
 
-      state$.next(value);
+      next(value);
 
       if (set != null) {
         const promiseOrValue = set(value);
@@ -79,14 +111,14 @@ export function createStore<TState>(
         }
       }
     },
-    subscribe(observer) {
+    subscribe: (observer) => {
       if (subscriptionCount === 0) {
         load();
       }
 
       subscriptionCount++;
 
-      return state$
+      return distinctState$
         .pipe(
           finalize(() => {
             subscriptionCount--;
@@ -103,15 +135,9 @@ export function createStore<TState>(
         )
         .subscribe(observer);
     },
-    getStatus() {
-      return status;
-    },
-    getError() {
-      return getError;
-    },
-    getValue() {
-      return state$.getValue();
-    },
+    getStatus: () => status,
+    getError: () => getError,
+    getValue: () => state$.getValue(),
     load,
   };
 }

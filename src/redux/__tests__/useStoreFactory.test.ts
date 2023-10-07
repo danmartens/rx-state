@@ -48,7 +48,7 @@ describe('useStoreFactory', () => {
       );
 
       const { result, unmount } = renderHook(() =>
-        useStoreFactory(factory, 42)
+        useStoreFactory(factory, 42, {})
       );
 
       const [state] = result.current;
@@ -65,7 +65,7 @@ describe('useStoreFactory', () => {
       );
 
       const { result, unmount } = renderHook(() =>
-        useStoreFactory(factory, 42)
+        useStoreFactory(factory, 42, {})
       );
 
       const [, dispatch] = result.current;

@@ -9,6 +9,7 @@ describe('useStore', () => {
     test('initial state', () => {
       const store = createReducerStore(
         42,
+        {},
         (state: number, _action: Action) => state
       );
 
@@ -23,6 +24,7 @@ describe('useStore', () => {
     test('dispatching actions', () => {
       const store = createReducerStore(
         42,
+        {},
         (state: number, action: { type: 'INCREMENT' }) =>
           action.type === 'INCREMENT' ? state + 1 : state
       );

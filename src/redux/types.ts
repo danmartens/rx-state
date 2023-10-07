@@ -1,4 +1,4 @@
-import { Observer, Subject, Subscription } from 'rxjs';
+import { Observable, Observer, Subject, Subscription } from 'rxjs';
 
 export interface Action<T = any> {
   type: T;
@@ -31,8 +31,13 @@ export interface ReducerStore<TState, TAction> extends ReadonlyStore<TState> {
 
 export type StoreFactory<TState> = (initialState: TState) => Store<TState>;
 
-export type ReducerStoreFactory<TState, TAction extends Action> = (
-  initialState: TState
+export type ReducerStoreFactory<
+  TState,
+  TAction extends Action,
+  TDependencies extends Record<string, unknown> = {}
+> = (
+  initialState: TState,
+  dependencies: TDependencies
 ) => ReducerStore<TState, TAction>;
 
 export type Getter = <TState>(
@@ -40,3 +45,38 @@ export type Getter = <TState>(
 ) => TState;
 
 export interface Dispatcher<TAction extends Action> extends Subject<TAction> {}
+
+export type Effect<
+  TState,
+  TAction extends Action,
+  TDependencies extends Record<string, unknown> = {}
+> = (
+  action$: Dispatcher<TAction>,
+  state$: Observable<TState>,
+  dependencies: TDependencies
+) => Observable<TAction>;
+
+export interface StoreOptions<TState> {
+  /**
+   * If true, the store will update its state and run effects even if there are
+   * no subscribers. By default, stores are lazy (cold observables) and will
+   * only update their state and run effects when there are subscribers.
+   *
+   * See: https://benlesh.medium.com/hot-vs-cold-observables-f8094ed53339
+   */
+  hot?: boolean;
+  logging?: {
+    name: string;
+    state?: boolean | ((state: TState) => boolean);
+  };
+}
+
+export interface ReducerStoreOptions<TState, TAction extends Action>
+  extends StoreOptions<TState> {
+  action$?: Dispatcher<TAction>;
+  logging?: {
+    name: string;
+    state?: boolean | ((state: TState) => boolean);
+    actions?: boolean | ((action: TAction) => boolean);
+  };
+}

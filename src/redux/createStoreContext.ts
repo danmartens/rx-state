@@ -48,7 +48,7 @@ export function createStoreContext<TState, TAction extends Action>(
   }> = (props) => {
     const { initialState, children } = props;
 
-    const [store] = useState(() => storeFactory(initialState));
+    const [store] = useState(() => storeFactory(initialState, {}));
 
     // @ts-expect-error
     return createElement(StoreContext.Provider, { value: store }, children);
