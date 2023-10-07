@@ -14,18 +14,22 @@ jobs:
   check:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./packages/rx-state
+
     steps:
       - uses: actions/checkout@v3
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: '20.x'
           cache: 'yarn'
 
       - name: Install Yarn from corepack
         run: |
           corepack enable
-          corepack prepare yarn@3.5.0 --activate
+          corepack prepare yarn@3.6.4 --activate
 
       - name: Install Dependencies
         run: yarn install --immutable

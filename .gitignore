@@ -6,8 +6,8 @@
 !.yarn/sdks
 !.yarn/versions
 
-node_modules
-/dist
-/coverage
+**/node_modules
+**/dist
+**/coverage
 
 .DS_Store

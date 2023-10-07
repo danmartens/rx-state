@@ -1417,9 +1417,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@danmartens/rx-state@workspace:.":
+"@danmartens/rx-state@workspace:packages/rx-state":
   version: 0.0.0-use.local
-  resolution: "@danmartens/rx-state@workspace:."
+  resolution: "@danmartens/rx-state@workspace:packages/rx-state"
   dependencies:
     "@babel/core": ^7.21.4
     "@babel/preset-env": ^7.21.4
@@ -1430,6 +1430,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/react-hooks": ^8.0.1
     "@types/jest": ^29.5.0
+    "@types/node": ^20.8.3
     "@types/react": ^18.0.35
     babel-jest: ^29.5.0
     eslint: ^8.38.0
@@ -2164,6 +2165,13 @@ __metadata:
   version: 20.2.1
   resolution: "@types/node@npm:20.2.1"
   checksum: ed774afa6e9b4ad7868ed0182a8ca40ad0dd54815a70d3051b23fa850f3bca6bea4d0cb55e1fc769666786ac2cc4c1b37aeade313cb4c4634133f18ebcded496
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.8.3":
+  version: 20.8.3
+  resolution: "@types/node@npm:20.8.3"
+  checksum: bfb88b341faeb19f8fd37306a3bf433721b876c6491d10fcb0b13fd26601fa36ee45113dd82b1e1c23e3c957dff5b99f81a16493cefa03abe797e41a2487a4f7
   languageName: node
   linkType: hard
 
@@ -5821,6 +5829,12 @@ __metadata:
   checksum: 6da2bfe1eb16714ccd4bf56ca92430309dc71b4492a3c38502f68f645433dcc789fb79f3761fc2269aa0cf20ece7821c4d7c95b860b7343c2ed52ed1c36c9a90
   languageName: node
   linkType: hard
+
+"root-workspace-0b6124@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "root-workspace-0b6124@workspace:."
+  languageName: unknown
+  linkType: soft
 
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
