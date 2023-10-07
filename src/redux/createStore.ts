@@ -95,6 +95,9 @@ export function createStore<TState>(
       getSubscription?.unsubscribe();
       setSubscription?.unsubscribe();
 
+      getSubscription = null;
+      setSubscription = null;
+
       status = StoreStatus.HasValue;
 
       next(value);
@@ -130,6 +133,9 @@ export function createStore<TState>(
 
               getSubscription?.unsubscribe();
               setSubscription?.unsubscribe();
+
+              getSubscription = null;
+              setSubscription = null;
             }
           })
         )
