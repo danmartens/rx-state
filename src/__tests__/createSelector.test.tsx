@@ -31,8 +31,8 @@ describe('createSelector', () => {
   });
 
   test('works with async stores', async () => {
-    const n1 = createStore(0, () => Promise.resolve(1));
-    const n2 = createStore(0, () => Promise.resolve(2));
+    const n1 = createStore(0, { get: () => Promise.resolve(1) });
+    const n2 = createStore(0, { get: () => Promise.resolve(2) });
 
     const sum = createSelector((get) => {
       return get(n1) + get(n2);
@@ -60,8 +60,8 @@ describe('createSelector', () => {
   });
 
   test('works with async stores 2', async () => {
-    const n1 = createStore(0, () => Promise.resolve(1));
-    const n2 = createStore(0, () => Promise.resolve(2));
+    const n1 = createStore(0, { get: () => Promise.resolve(1) });
+    const n2 = createStore(0, { get: () => Promise.resolve(2) });
 
     const sum = createSelector((get) => {
       return get(n1) + get(n2);
@@ -73,8 +73,8 @@ describe('createSelector', () => {
   });
 
   test('load returns a stable promise', () => {
-    const n1 = createStore(0, () => Promise.resolve(1));
-    const n2 = createStore(0, () => Promise.resolve(2));
+    const n1 = createStore(0, { get: () => Promise.resolve(1) });
+    const n2 = createStore(0, { get: () => Promise.resolve(2) });
 
     const sum = createSelector((get) => {
       return get(n1) + get(n2);

@@ -1,36 +1,60 @@
 import {
+  ComponentType,
   ReactNode,
   createContext,
   createElement,
   useCallback,
   useContext,
-  useMemo,
   useState,
   useSyncExternalStore,
 } from 'react';
+import {
+  Action,
+  Store,
+  ReducerStore,
+  StoreFactory,
+  ReducerStoreFactory,
+} from './types';
+import { useStore as useStoreInternal } from './useStore';
 
-import { Action, Store, StoreFactory } from './types';
-import { useStoreDispatch } from './useStoreDispatch';
-import { useStoreState } from './useStoreState';
+export function createStoreContext<TState, TAction extends Action>(
+  storeFactory: StoreFactory<TState>
+): {
+  Provider: ComponentType<{
+    initialState: TState;
+    children: ReactNode;
+  }>;
+  useStore: () => [TState, (state: TState) => void];
+  useStoreContext: () => Store<TState>;
+};
 
-export const createStoreContext = <
-  TState,
-  TAction extends Action,
-  TDependencies extends Record<string, unknown> = {}
->(
-  storeFactory: StoreFactory<TState, TAction, TDependencies>
-) => {
-  const StoreContext = createContext<Store<TState, TAction> | null>(null);
+export function createStoreContext<TState, TAction extends Action>(
+  storeFactory: ReducerStoreFactory<TState, TAction>
+): {
+  Provider: ComponentType<{
+    initialState: TState;
+    children: ReactNode;
+  }>;
+  useSelector: <TSelected>(selector: (state: TState) => TSelected) => TSelected;
+  useDispatch: () => (action: TAction) => void;
+  useStore: () => [TState, (action: TAction) => void];
+  useStoreContext: () => ReducerStore<TState, TAction>;
+};
+
+export function createStoreContext<TState, TAction extends Action>(
+  storeFactory: StoreFactory<TState> | ReducerStoreFactory<TState, TAction>
+) {
+  const StoreContext = createContext<Store<TState> | null>(null);
 
   const Provider: React.FC<{
     initialState: TState;
-    dependencies: TDependencies;
     children: ReactNode;
   }> = (props) => {
-    const { initialState, dependencies, children } = props;
+    const { initialState, children } = props;
 
-    const [store] = useState(() => storeFactory(initialState, dependencies));
+    const [store] = useState(() => storeFactory(initialState, {}));
 
+    // @ts-expect-error
     return createElement(StoreContext.Provider, { value: store }, children);
   };
 
@@ -62,8 +86,8 @@ export const createStoreContext = <
 
     return useSyncExternalStore(
       subscribe,
-      () => selector(store.getState()),
-      () => selector(store.getState())
+      () => selector(store.getValue()),
+      () => selector(store.getValue())
     );
   };
 
@@ -74,12 +98,7 @@ export const createStoreContext = <
       throw new Error('Store is not initialized');
     }
 
-    return useCallback(
-      (action: TAction) => {
-        store.next(action);
-      },
-      [store]
-    );
+    return store.next;
   };
 
   const useStore = () => {
@@ -89,39 +108,24 @@ export const createStoreContext = <
       throw new Error('Store is not initialized');
     }
 
-    const state = useStoreState(store);
-    const dispatch = useStoreDispatch(store);
-
-    return [state, dispatch] as const;
+    return useStoreInternal(store);
   };
 
-  const createActionDispatchHook = <
-    TActionCreators extends Record<string, (...args: any[]) => TAction>
-  >(
-    actionCreators: TActionCreators
-  ) => {
-    return () => {
-      const dispatch = useDispatch();
+  const useStoreContext = () => {
+    const store = useContext(StoreContext);
 
-      return useMemo(() => {
-        return Object.fromEntries(
-          Object.entries(actionCreators).map(([key, actionCreator]) => {
-            return [key, (...args) => dispatch(actionCreator(...args))];
-          })
-        ) as {
-          [K in keyof TActionCreators]: (
-            ...args: Parameters<TActionCreators[K]>
-          ) => void;
-        };
-      }, [dispatch]);
-    };
+    if (store == null) {
+      throw new Error('Store is not initialized');
+    }
+
+    return store;
   };
 
   return {
     Provider,
-    createActionDispatchHook,
     useSelector,
     useDispatch,
     useStore,
+    useStoreContext,
   };
-};
+}

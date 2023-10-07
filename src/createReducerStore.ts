@@ -13,9 +13,9 @@ import {
   ReducerStoreOptions,
 } from './types';
 import { createDispatcher } from './createDispatcher';
-import { isRecord } from '../utils/isRecord';
-import { formatChangeset } from '../utils/formatChangeset';
-import { diffObjects } from '../utils/diffObjects';
+import { isRecord } from './utils/isRecord';
+import { formatChangeset } from './utils/formatChangeset';
+import { diffObjects } from './utils/diffObjects';
 
 export function createReducerStore<
   TState,
@@ -30,7 +30,7 @@ export function createReducerStore<
 ): ReducerStore<TState, TAction> {
   const state$ = new BehaviorSubject(initialState);
   const distinctState$ = state$.pipe(distinctUntilChanged());
-  const action$ = createDispatcher<TAction>();
+  const action$ = options.action$ ?? createDispatcher<TAction>();
 
   const { hot = false, logging } = options;
 

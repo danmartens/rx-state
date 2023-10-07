@@ -1,41 +1,49 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-hooks';
 
-import { createStore } from '../createStore';
+import { createReducerStore } from '../createReducerStore';
+import { Action } from '../types';
 import { useStore } from '../useStore';
 
-describe('useStore()', () => {
-  test('initial state', () => {
-    const store = createStore((state, _action) => state, [])(42, {});
+describe('useStore', () => {
+  describe('reducer store', () => {
+    test('initial state', () => {
+      const store = createReducerStore(
+        42,
+        {},
+        (state: number, _action: Action) => state
+      );
 
-    const { result, unmount } = renderHook(() => useStore(store));
-    const [state] = result.current;
+      const { result, unmount } = renderHook(() => useStore(store));
+      const [state] = result.current;
 
-    expect(state).toEqual(42);
+      expect(state).toEqual(42);
 
-    unmount();
-  });
-
-  test('dispatching actions', () => {
-    const store = createStore(
-      (state: number, action: { type: 'INCREMENT' }) =>
-        action.type === 'INCREMENT' ? state + 1 : state,
-      []
-    )(42, {});
-
-    const { result, unmount } = renderHook(() => useStore(store));
-
-    const [, dispatch] = result.current;
-
-    act(() => {
-      dispatch({ type: 'INCREMENT' });
-      dispatch({ type: 'INCREMENT' });
+      unmount();
     });
 
-    const [state] = result.current;
+    test('dispatching actions', () => {
+      const store = createReducerStore(
+        42,
+        {},
+        (state: number, action: { type: 'INCREMENT' }) =>
+          action.type === 'INCREMENT' ? state + 1 : state
+      );
 
-    expect(state).toEqual(44);
-    expect(store.getState()).toEqual(44);
+      const { result, unmount } = renderHook(() => useStore(store));
 
-    unmount();
+      const [, dispatch] = result.current;
+
+      act(() => {
+        dispatch({ type: 'INCREMENT' });
+        dispatch({ type: 'INCREMENT' });
+      });
+
+      const [state] = result.current;
+
+      expect(state).toEqual(44);
+      expect(store.getValue()).toEqual(44);
+
+      unmount();
+    });
   });
 });

@@ -1,23 +1,34 @@
-import { useCallback, useSyncExternalStore } from 'react';
-import { Action, Store } from './types';
+import { useSyncExternalStore } from 'react';
 
-export const useStoreState = <TState, TAction extends Action>(
-  store: Store<TState, TAction>
-) => {
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      const subscription = store.subscribe({
-        next: () => {
-          onChange();
-        },
-      });
+import { ReadonlyStore, StoreStatus } from './types';
+
+export function useStoreState<TState>(store: ReadonlyStore<TState>) {
+  if (
+    store.getStatus() === StoreStatus.Initial ||
+    store.getStatus() === StoreStatus.Loading
+  ) {
+    throw store.load();
+  }
+
+  if (store.getStatus() === StoreStatus.HasError) {
+    const error = store.getError();
+
+    if (error != null) {
+      throw error;
+    }
+
+    throw new Error('Store encountered an error');
+  }
+
+  return useSyncExternalStore(
+    (callback) => {
+      const subscription = store.subscribe(callback);
 
       return () => {
         subscription.unsubscribe();
       };
     },
-    [store]
+    store.getValue,
+    store.getValue
   );
-
-  return useSyncExternalStore(subscribe, store.getState, store.getState);
-};
+}

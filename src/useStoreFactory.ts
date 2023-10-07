@@ -1,18 +1,38 @@
 import { useState } from 'react';
-
-import { Action, StoreFactory } from './types';
+import { Action, StoreFactory, ReducerStoreFactory } from './types';
 import { useStore } from './useStore';
 
-export const useStoreFactory = <
+export function useStoreFactory<
   TState,
   TAction extends Action,
-  TDependencies extends Record<string, unknown>
+  TDependencies extends Record<string, unknown> = {}
 >(
-  factory: StoreFactory<TState, TAction, TDependencies>,
+  storeFactory: StoreFactory<TState>,
+  initialState: TState,
+  dependencies?: TDependencies
+): [TState, (state: TState) => void];
+
+export function useStoreFactory<
+  TState,
+  TAction extends Action,
+  TDependencies extends Record<string, unknown> = {}
+>(
+  store: ReducerStoreFactory<TState, TAction>,
   initialState: TState,
   dependencies: TDependencies
-) => {
-  const [store] = useState(() => factory(initialState, dependencies));
+): [TState, (action: TAction) => void];
 
+export function useStoreFactory<
+  TState,
+  TAction extends Action,
+  TDependencies extends Record<string, unknown> = {}
+>(
+  storeFactory: StoreFactory<TState> | ReducerStoreFactory<TState, TAction>,
+  initialState: TState,
+  dependencies: TDependencies
+) {
+  const [store] = useState(() => storeFactory(initialState, dependencies));
+
+  // @ts-expect-error
   return useStore(store);
-};
+}

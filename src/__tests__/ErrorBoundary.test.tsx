@@ -46,9 +46,9 @@ describe('error handling', () => {
       }
     }
 
-    const promise = jest.fn().mockRejectedValue(new Error('Promise rejected'));
+    const get = jest.fn().mockRejectedValue(new Error('Promise rejected'));
 
-    const store = createStore(123, promise);
+    const store = createStore(123, { get });
 
     const Value: React.FC = () => {
       const value = useStoreState(store);
@@ -74,6 +74,6 @@ describe('error handling', () => {
 
     expect(screen.getByTestId('error').textContent).toBe('Promise rejected');
 
-    expect(promise).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
   });
 });

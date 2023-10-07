@@ -3,7 +3,7 @@ import { StoreStatus } from '../types';
 
 describe('createStore', () => {
   test('getters work', () => {
-    const enabled = createStore(true, () => false);
+    const enabled = createStore(true, { get: () => false });
 
     const values: boolean[] = [];
 
@@ -21,7 +21,7 @@ describe('createStore', () => {
   });
 
   test('getters work 2', async () => {
-    const enabled = createStore(true, async () => true);
+    const enabled = createStore(true, { get: async () => true });
 
     const values: boolean[] = [];
 
@@ -41,7 +41,7 @@ describe('createStore', () => {
   });
 
   test('getters work 3', async () => {
-    const enabled = createStore(0, async () => 1);
+    const enabled = createStore(0, { get: async () => 1 });
 
     const values: number[] = [];
 
@@ -71,11 +71,11 @@ describe('createStore', () => {
   });
 
   test('getters are lazy', () => {
-    const getter = jest.fn().mockReturnValue(false);
+    const get = jest.fn().mockReturnValue(false);
 
-    const enabled = createStore(true, getter);
+    const enabled = createStore(true, { get });
 
-    expect(getter).not.toHaveBeenCalled();
+    expect(get).not.toHaveBeenCalled();
 
     const values: boolean[] = [];
 
@@ -87,13 +87,13 @@ describe('createStore', () => {
 
     subscription.unsubscribe();
 
-    expect(getter).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
   });
 
   test('setters work', () => {
-    const setter = jest.fn();
+    const set = jest.fn();
 
-    const enabled = createStore(true, () => false, setter);
+    const enabled = createStore(true, { get: () => false, set });
 
     const values: boolean[] = [];
 
@@ -109,7 +109,7 @@ describe('createStore', () => {
 
     subscription.unsubscribe();
 
-    expect(setter).toHaveBeenCalledWith(true);
+    expect(set).toHaveBeenCalledWith(true);
   });
 
   test('sync stores start with status "HasValue"', () => {
@@ -119,7 +119,7 @@ describe('createStore', () => {
   });
 
   test('async stores start with status "Loading"', async () => {
-    const store = createStore(123, () => Promise.resolve(42));
+    const store = createStore(123, { get: () => Promise.resolve(42) });
 
     expect(store.getStatus()).toBe(StoreStatus.Initial);
 
@@ -138,7 +138,7 @@ describe('createStore', () => {
   });
 
   test('async stores error', async () => {
-    const store = createStore(123, () => Promise.reject(42));
+    const store = createStore(123, { get: () => Promise.reject(42) });
 
     const values: number[] = [];
 

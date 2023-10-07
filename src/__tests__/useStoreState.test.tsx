@@ -8,8 +8,8 @@ import { StoreStatus } from '../types';
 
 describe('useStoreState', () => {
   test('works with selectors', async () => {
-    const n1 = createStore(0, () => Promise.resolve(1));
-    const n2 = createStore(0, () => Promise.resolve(2));
+    const n1 = createStore(0, { get: () => Promise.resolve(1) });
+    const n2 = createStore(0, { get: () => Promise.resolve(2) });
 
     const sum = createSelector((get) => {
       return get(n1) + get(n2);

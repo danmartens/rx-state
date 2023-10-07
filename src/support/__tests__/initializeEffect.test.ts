@@ -1,4 +1,5 @@
 import { BehaviorSubject, delay, map, tap } from 'rxjs';
+
 import { ofType } from '../../ofType';
 import { Effect } from '../../types';
 import { initializeEffect } from '../initializeEffect';
@@ -6,7 +7,7 @@ import { initializeEffect } from '../initializeEffect';
 describe('initializeEffect()', () => {
   describe('dispatch()', () => {
     test('dispatches an action asynchronously', async () => {
-      const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
+      const effect: Effect<number, { type: 'PING' } | { type: 'PONG' }> = (
         action$
       ) => {
         return action$.pipe(
@@ -36,7 +37,7 @@ describe('initializeEffect()', () => {
     test('dispatches an action synchronously', () => {
       const sideEffect = jest.fn();
 
-      const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
+      const effect: Effect<number, { type: 'PING' } | { type: 'PONG' }> = (
         action$
       ) => {
         return action$.pipe(
@@ -62,7 +63,7 @@ describe('initializeEffect()', () => {
     });
 
     test('unhandled errors are thrown', async () => {
-      const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
+      const effect: Effect<number, { type: 'PING' } | { type: 'PONG' }> = (
         action$
       ) => {
         return action$.pipe(

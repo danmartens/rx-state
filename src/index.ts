@@ -2,17 +2,21 @@ export { createCancelableEffect } from './createCancelableEffect';
 export { createDispatcher } from './createDispatcher';
 export { createEffect } from './createEffect';
 export { createReducer } from './createReducer';
+export { createReducerStore } from './createReducerStore';
+export { createReducerStoreFactory } from './createReducerStoreFactory';
 export { createSelector } from './createSelector';
 export { createStore } from './createStore';
 export { createStoreContext } from './createStoreContext';
+export { createStoreFactory } from './createStoreFactory';
+export { mapActions } from './mapActions';
 export { ofType } from './ofType';
+export { useCreateSelector } from './useCreateSelector';
+export { useSelector } from './useSelector';
 export { useStore } from './useStore';
 export { useStoreDispatch } from './useStoreDispatch';
 export { useStoreFactory } from './useStoreFactory';
-export { useStoreSelector } from './useStoreSelector';
 export { useStoreState } from './useStoreState';
 
-export { compose } from './utils/compose';
 export { filter } from './utils/filter';
 export { getIn } from './utils/getIn';
 export { insert } from './utils/insert';
@@ -29,4 +33,13 @@ export { updateIn } from './utils/updateIn';
 
 export { initializeEffect } from './support/initializeEffect';
 
-export type { Action, Effect, Store, StoreFactory } from './types';
+export type {
+  Store,
+  ReducerStore,
+  StoreFactory,
+  ReducerStoreFactory,
+  StoreOptions,
+  ReducerStoreOptions,
+  Action,
+  Effect,
+} from './types';

@@ -1,49 +1,80 @@
-import { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
+import { ReactNode, useCallback } from 'react';
 
+import { createReducerStoreFactory } from '../createReducerStoreFactory';
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';
+import { createStoreFactory } from '../createStoreFactory';
+import { useCreateSelector } from '../useCreateSelector';
 
 describe('createStoreContext', () => {
-  test('useSelector()', () => {
-    const storeFactory = createStore((state: number, _action) => state, []);
-
-    const Context = createStoreContext(storeFactory);
+  test('works with stores', () => {
+    const factory = createStoreFactory<number>();
+    const Context = createStoreContext(factory);
 
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <Context.Provider initialState={42} dependencies={{}}>
-        {children}
-      </Context.Provider>
+      <Context.Provider initialState={42}>{children}</Context.Provider>
     );
 
-    const { result, unmount } = renderHook(
-      () => Context.useSelector((state) => state),
-      { wrapper }
-    );
+    const { result, unmount } = renderHook(() => Context.useStore(), {
+      wrapper,
+    });
 
-    const state = result.current;
+    const [state] = result.current;
 
     expect(state).toEqual(42);
 
     unmount();
   });
 
-  test('useStore()', () => {
-    const storeFactory = createStore(
-      (state: number, action: { type: 'INCREMENT' }) =>
-        action.type === 'INCREMENT' ? state + 1 : state,
-      []
-    );
+  test('works with stores 2', () => {
+    const factory = createStoreFactory<number>();
+    const Context = createStoreContext(factory);
 
-    const { Provider, useStore } = createStoreContext(storeFactory);
+    const n1 = createStore(1);
 
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <Provider initialState={42} dependencies={{}}>
-        {children}
-      </Provider>
+      <Context.Provider initialState={42}>{children}</Context.Provider>
     );
 
-    const { result } = renderHook(() => useStore(), { wrapper });
+    const { result, unmount } = renderHook(
+      () => {
+        const store = Context.useStoreContext();
+
+        return useCreateSelector(
+          useCallback((get) => get(store) + get(n1), [])
+        );
+      },
+      {
+        wrapper,
+      }
+    );
+
+    expect(result.current).toEqual(43);
+
+    unmount();
+  });
+
+  test('works with reducer stores', () => {
+    const factory = createReducerStoreFactory(
+      (state: number, action: { type: 'INCREMENT' }) => {
+        if (action.type === 'INCREMENT') {
+          return state + 1;
+        }
+
+        return state;
+      }
+    );
+
+    const Context = createStoreContext(factory);
+
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <Context.Provider initialState={42}>{children}</Context.Provider>
+    );
+
+    const { result, unmount } = renderHook(() => Context.useStore(), {
+      wrapper,
+    });
 
     let [state, dispatch] = result.current;
 
@@ -56,5 +87,7 @@ describe('createStoreContext', () => {
     [state] = result.current;
 
     expect(state).toEqual(43);
+
+    unmount();
   });
 });

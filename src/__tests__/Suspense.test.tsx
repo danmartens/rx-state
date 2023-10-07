@@ -5,9 +5,9 @@ import { Suspense } from 'react';
 
 describe('suspense', () => {
   test('works with async stores', async () => {
-    const promise = jest.fn().mockResolvedValue(42);
+    const get = jest.fn().mockResolvedValue(42);
 
-    const store = createStore(123, promise);
+    const store = createStore(123, { get });
 
     const Value: React.FC = () => {
       const value = useStoreState(store);
@@ -31,13 +31,13 @@ describe('suspense', () => {
 
     expect(screen.getByTestId('value').textContent).toBe('42');
 
-    expect(promise).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
   });
 
   test('works with async stores 2', async () => {
-    const promise = jest.fn().mockResolvedValue(42);
+    const get = jest.fn().mockResolvedValue(42);
 
-    const store = createStore(123, promise);
+    const store = createStore(123, { get });
 
     const ValueA: React.FC = () => {
       const value = useStoreState(store);
@@ -75,13 +75,13 @@ describe('suspense', () => {
     expect(screen.getByTestId('value-a').textContent).toBe('42');
     expect(screen.getByTestId('value-b').textContent).toBe('42');
 
-    expect(promise).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
   });
 
   test('works with async stores 3', async () => {
-    const promise = jest.fn().mockResolvedValue({ value: 42 });
+    const get = jest.fn().mockResolvedValue({ value: 42 });
 
-    const store = createStore<{ value: number }>({ value: 123 }, promise);
+    const store = createStore({ value: 123 }, { get });
 
     const Value: React.FC = () => {
       const { value } = useStoreState(store);
@@ -105,7 +105,7 @@ describe('suspense', () => {
 
     expect(screen.getByTestId('value').textContent).toBe('42');
 
-    expect(promise).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
 
     result.unmount();
 
@@ -123,6 +123,6 @@ describe('suspense', () => {
 
     expect(screen.getByTestId('value').textContent).toBe('42');
 
-    expect(promise).toHaveBeenCalledTimes(1);
+    expect(get).toHaveBeenCalledTimes(1);
   });
 });

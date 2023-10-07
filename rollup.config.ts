@@ -2,7 +2,7 @@ import typescript from '@rollup/plugin-typescript';
 import { defineConfig } from 'rollup';
 
 export default defineConfig({
-  input: ['src/index.ts'],
+  input: ['src/index.ts', 'src/redux/index.ts'],
   output: {
     dir: 'dist',
     format: 'commonjs',

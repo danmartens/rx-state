@@ -1,5 +1,5 @@
 import { createReducer } from '../createReducer';
-import { createStore } from '../createStore';
+import { createReducerStore } from '../createReducerStore';
 
 type Action = { type: 'INCREMENT' } | { type: 'DECREMENT' };
 
@@ -10,15 +10,15 @@ describe('createReducer', () => {
       INCREMENT: (state) => state + 1,
     });
 
-    const store = createStore(reducer)(0, {});
+    const store = createReducerStore(0, {}, reducer);
 
-    expect(store.getState()).toBe(0);
+    expect(store.getValue()).toBe(0);
 
-    const subscription = store.subscribe({ next: () => {} });
+    const subscription = store.subscribe(() => {});
 
     store.next({ type: 'INCREMENT' });
 
-    expect(store.getState()).toBe(1);
+    expect(store.getValue()).toBe(1);
 
     subscription.unsubscribe();
   });

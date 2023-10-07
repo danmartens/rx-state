@@ -1,12 +1,18 @@
-import { Action, Store } from './types';
-import { useStoreDispatch } from './useStoreDispatch';
+import { Action, Store, ReducerStore } from './types';
 import { useStoreState } from './useStoreState';
 
-export const useStore = <TState, TAction extends Action>(
-  store: Store<TState, TAction>
-) => {
-  const state = useStoreState(store);
-  const dispatch = useStoreDispatch(store);
+export function useStore<TState, TAction extends Action>(
+  store: Store<TState>
+): [TState, (state: TState) => void];
 
-  return [state, dispatch] as const;
-};
+export function useStore<TState, TAction extends Action>(
+  store: ReducerStore<TState, TAction>
+): [TState, (action: TAction) => void];
+
+export function useStore<TState, TAction extends Action>(
+  store: Store<TState> | ReducerStore<TState, TAction>
+) {
+  const state = useStoreState(store);
+
+  return [state, store.next] as const;
+}

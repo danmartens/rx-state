@@ -1,5 +1,4 @@
 import { Subject } from 'rxjs';
-
 import { Action, Dispatcher } from './types';
 
 export function createDispatcher<

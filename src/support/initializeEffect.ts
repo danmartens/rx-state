@@ -7,7 +7,7 @@ export const initializeEffect = <
   TState,
   TDependencies extends Record<string, unknown>
 >(
-  effect: Effect<TAction, TState, TDependencies>,
+  effect: Effect<TState, TAction, TDependencies>,
   state$: Observable<TState>,
   dependencies: TDependencies
 ) => {
