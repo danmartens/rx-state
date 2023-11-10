@@ -104,9 +104,23 @@ export function createAsyncStore<T>(
         if (setResult instanceof Promise) {
           setSubscription = from(setResult)
             .pipe(filter(isDefined))
-            .subscribe(state$);
+            .subscribe({
+              next: (value) => {
+                state$.next(value);
+              },
+              error: (error) => {
+                state$.error(error);
+              },
+            });
         } else if (setResult instanceof Observable) {
-          setSubscription = setResult.pipe(filter(isDefined)).subscribe(state$);
+          setSubscription = setResult.pipe(filter(isDefined)).subscribe({
+            next: (value) => {
+              state$.next(value);
+            },
+            error: (error) => {
+              state$.error(error);
+            },
+          });
         } else if (setResult != null) {
           state$.next(setResult);
         }
