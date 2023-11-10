@@ -22,10 +22,8 @@ describe('createAsyncStore', () => {
     const count = createAsyncStore(() => Promise.resolve(42));
     const values: number[] = [];
 
-    const subscription = count.subscribe({
-      next: (value) => {
-        values.push(value);
-      },
+    const subscription = count.subscribe((value) => {
+      values.push(value);
     });
 
     expect(values).toEqual([]);
@@ -41,10 +39,8 @@ describe('createAsyncStore', () => {
     const count = createAsyncStore(() => Promise.resolve(42));
     const values: number[] = [];
 
-    const subscription = count.subscribe({
-      next: (value) => {
-        values.push(value);
-      },
+    const subscription = count.subscribe((value) => {
+      values.push(value);
     });
 
     count.next(43);
@@ -63,12 +59,11 @@ describe('createAsyncStore', () => {
       async () => 42,
       async (value) => value + 1
     );
+
     const values: number[] = [];
 
-    const subscription = count.subscribe({
-      next: (value) => {
-        values.push(value);
-      },
+    const subscription = count.subscribe((value) => {
+      values.push(value);
     });
 
     count.next(43);

@@ -1,5 +1,7 @@
 import type { Observable, Observer, Subject, Subscription } from 'rxjs';
 
+export type ObserverOrNext<T> = Partial<Observer<T>> | ((value: T) => void);
+
 export interface Action<T = any> {
   type: T;
 }
@@ -13,7 +15,7 @@ export interface Dispatcher<TAction extends Action> extends Subject<TAction> {}
 
 export interface Store<TState, TAction extends Action> {
   next(action: TAction): void;
-  subscribe(observer: Partial<Observer<TState>>): Subscription;
+  subscribe(observer: ObserverOrNext<TState>): Subscription;
   getState(): TState;
 }
 
@@ -44,7 +46,7 @@ export type Setter<T> = (
 
 export interface AsyncStore<T> {
   next(value: T): void;
-  subscribe(observer: Partial<Observer<T>>): Subscription;
+  subscribe(observerOrNext: ObserverOrNext<T>): Subscription;
   getValue(): T | undefined;
   load(force?: boolean): Promise<T>;
 }

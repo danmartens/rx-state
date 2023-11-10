@@ -6,11 +6,10 @@ import {
   finalize,
   from,
   tap,
-  type Observer,
   type Subscription,
 } from 'rxjs';
 
-import type { AsyncStore, Getter, Setter } from './types';
+import type { AsyncStore, Getter, ObserverOrNext, Setter } from './types';
 import { isDefined } from './utils/isDefined';
 
 export function createAsyncStore<T>(
@@ -87,7 +86,7 @@ export function createAsyncStore<T>(
         }
       }
     },
-    subscribe: (observer: Partial<Observer<T>>) => {
+    subscribe: (observerOrNext: ObserverOrNext<T>) => {
       if (subscriptionCount === 0) {
         load();
       }
@@ -109,7 +108,7 @@ export function createAsyncStore<T>(
             }
           })
         )
-        .subscribe(observer);
+        .subscribe(observerOrNext);
     },
     getValue: () => {
       return state$.getValue();
