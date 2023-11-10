@@ -5,7 +5,7 @@ import { useStore } from '../useStore';
 
 describe('useStore()', () => {
   test('initial state', () => {
-    const store = createStore((state, _action) => state, [])(42, {});
+    const store = createStore((state) => state, [])(42, {});
 
     const { result, unmount } = renderHook(() => useStore(store));
     const [state] = result.current;

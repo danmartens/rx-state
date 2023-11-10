@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 
 import { createStore } from '../createStore';
@@ -6,7 +6,7 @@ import { createStoreContext } from '../createStoreContext';
 
 describe('createStoreContext', () => {
   test('useSelector()', () => {
-    const storeFactory = createStore((state: number, _action) => state, []);
+    const storeFactory = createStore((state: number) => state, []);
 
     const Context = createStoreContext(storeFactory);
 
@@ -45,6 +45,7 @@ describe('createStoreContext', () => {
 
     const { result } = renderHook(() => useStore(), { wrapper });
 
+    // eslint-disable-next-line prefer-const
     let [state, dispatch] = result.current;
 
     expect(state).toEqual(42);
