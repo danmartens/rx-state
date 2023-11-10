@@ -26,7 +26,21 @@ export function createAsyncStore<T>(
   options: Options<T> = {}
 ): AsyncStore<T> {
   const state$ = new BehaviorSubject<T | undefined>(undefined);
-  const distinctState$ = state$.pipe(distinctUntilChanged());
+
+  const distinctState$ = state$.pipe(
+    filter(isDefined),
+    distinctUntilChanged(),
+    tap((state) => {
+      if (process.env.NODE_ENV !== 'production' && logging?.state != null) {
+        if (
+          (typeof logging.state === 'function' && logging.state(state)) ||
+          logging.state
+        ) {
+          console.log(`State (${logging.name})`, state);
+        }
+      }
+    })
+  );
 
   let getPromise: Promise<T> | null = null;
 
@@ -141,20 +155,6 @@ export function createAsyncStore<T>(
 
       return distinctState$
         .pipe(
-          filter(isDefined),
-          tap((state) => {
-            if (
-              process.env.NODE_ENV !== 'production' &&
-              logging?.state != null
-            ) {
-              if (
-                (typeof logging.state === 'function' && logging.state(state)) ||
-                logging.state
-              ) {
-                console.log(`State (${logging.name})`, state);
-              }
-            }
-          }),
           finalize(() => {
             subscriptionCount--;
 
