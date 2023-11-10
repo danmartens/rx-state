@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import type { Observable, Observer, Subject, Subscription } from 'rxjs';
 
 export type ObserverOrNext<T> = Partial<Observer<T>> | ((value: T) => void);

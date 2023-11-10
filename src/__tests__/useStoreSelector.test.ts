@@ -5,7 +5,7 @@ import { useStoreSelector } from '../useStoreSelector';
 
 describe('useStoreSelector()', () => {
   test('initial state', () => {
-    const store = createStore((state: number, _action) => state, [])(42, {});
+    const store = createStore((state: number) => state, [])(42, {});
 
     const { result, unmount } = renderHook(() =>
       useStoreSelector(store, (state) => state * 2)

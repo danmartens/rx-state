@@ -7,7 +7,7 @@ type Action = { type: 'PING' } | { type: 'PONG' };
 
 describe('createStore', () => {
   test('getState()', () => {
-    const store = createStore((state, _action) => state, [])(42, {});
+    const store = createStore((state) => state, [])(42, {});
 
     expect(store.getState()).toEqual(42);
   });
@@ -31,7 +31,7 @@ describe('createStore', () => {
 
   describe('subscribe()', () => {
     test('dispatching multiple actions within the same event loop only results in one state update', () => {
-      const store = createStore((state, _action) => state, [])(42, {});
+      const store = createStore((state) => state, [])(42, {});
 
       const observer = {
         next: jest.fn(),
@@ -48,7 +48,7 @@ describe('createStore', () => {
     });
 
     test('creating multiple subscriptions does not cause actions to be dispatched multiple times', () => {
-      const reducer = jest.fn((state, _action) => state);
+      const reducer = jest.fn((state) => state);
 
       const store = createStore(reducer, [])(42, {});
 

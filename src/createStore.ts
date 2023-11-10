@@ -1,6 +1,5 @@
 import {
   BehaviorSubject,
-  Observer,
   Subscription,
   distinctUntilChanged,
   finalize,

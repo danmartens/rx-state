@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { isRecord } from './isRecord';
 
 export type Changeset<T extends Record<string, unknown>> = {
