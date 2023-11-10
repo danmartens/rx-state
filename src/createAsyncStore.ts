@@ -6,6 +6,7 @@ import {
   finalize,
   from,
   tap,
+  share,
   type Subscription,
 } from 'rxjs';
 
@@ -39,7 +40,8 @@ export function createAsyncStore<T>(
           console.log(`State (${logging.name})`, state);
         }
       }
-    })
+    }),
+    share()
   );
 
   let getPromise: Promise<T> | null = null;
@@ -104,6 +106,10 @@ export function createAsyncStore<T>(
 
   return {
     next: (value: T) => {
+      if (value === state$.getValue()) {
+        return;
+      }
+
       getSubscription?.unsubscribe();
       setSubscription?.unsubscribe();
 

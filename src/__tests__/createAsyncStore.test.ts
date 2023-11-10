@@ -54,6 +54,19 @@ describe('createAsyncStore', () => {
     subscription.unsubscribe();
   });
 
+  test('calling next with the current state should not call the setter', async () => {
+    const setter = jest.fn((value) => Promise.resolve(value));
+    const count = createAsyncStore(() => Promise.resolve(42), setter);
+
+    count.next(43);
+
+    expect(setter).toHaveBeenCalledTimes(1);
+
+    count.next(43);
+
+    expect(setter).toHaveBeenCalledTimes(1);
+  });
+
   test('returning a value from the setter should update the state', async () => {
     const count = createAsyncStore(
       async () => 42,
