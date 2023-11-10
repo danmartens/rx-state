@@ -10,7 +10,7 @@ import {
   type Subscription,
 } from 'rxjs';
 
-import { AsyncStore, Getter, Setter } from './types';
+import type { AsyncStore, Getter, Setter } from './types';
 import { isDefined } from './utils/isDefined';
 
 export function createAsyncStore<T>(
