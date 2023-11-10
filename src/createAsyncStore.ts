@@ -1,9 +1,10 @@
 import {
   BehaviorSubject,
   Observable,
+  distinctUntilChanged,
+  filter,
   finalize,
   from,
-  filter,
   tap,
   type Observer,
   type Subscription,
@@ -17,8 +18,10 @@ export function createAsyncStore<T>(
   set?: Setter<T>
 ): AsyncStore<T> {
   const state$ = new BehaviorSubject<T | undefined>(undefined);
+  const distinctState$ = state$.pipe(distinctUntilChanged());
 
   let getPromise: Promise<T> | null = null;
+
   let getSubscription: Subscription | null = null;
   let setSubscription: Subscription | null = null;
 
@@ -91,7 +94,7 @@ export function createAsyncStore<T>(
 
       subscriptionCount++;
 
-      return state$
+      return distinctState$
         .pipe(
           filter(isDefined),
           finalize(() => {
