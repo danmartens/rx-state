@@ -4,7 +4,18 @@ import { type AsyncStore } from './types';
 import { type Defined } from './utils/isDefined';
 
 export function useAsyncStore<T>(store: AsyncStore<T>) {
-  const getValue = () => {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const subscription = store.subscribe(onChange);
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    },
+    [store]
+  );
+
+  const getValue = useCallback(() => {
     const value = store.getValue();
 
     if (value === undefined) {
@@ -12,25 +23,16 @@ export function useAsyncStore<T>(store: AsyncStore<T>) {
     }
 
     return value as Defined<T>;
-  };
+  }, [store]);
 
-  const state = useSyncExternalStore(
-    (callback) => {
-      const subscription = store.subscribe({
-        next: callback,
-      });
+  const state = useSyncExternalStore(subscribe, getValue, getValue);
 
-      return () => {
-        subscription.unsubscribe();
-      };
+  const setState = useCallback(
+    (nextState: T) => {
+      store.next(nextState);
     },
-    getValue,
-    getValue
+    [store]
   );
-
-  const setState = (nextState: T) => {
-    store.next(nextState);
-  };
 
   const reload = useCallback(() => {
     return store.load(true);
