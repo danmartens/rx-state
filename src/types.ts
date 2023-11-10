@@ -1,4 +1,4 @@
-import { Observable, Observer, Subject, Subscription } from 'rxjs';
+import type { Observable, Observer, Subject, Subscription } from 'rxjs';
 
 export interface Action<T = any> {
   type: T;
@@ -35,3 +35,16 @@ export type Effect<
   state$: Observable<TState>,
   dependencies: TDependencies
 ) => Observable<TAction>;
+
+export type Getter<T> = () => Promise<T> | Observable<T> | T;
+
+export type Setter<T> = (
+  value: T
+) => Promise<T | undefined> | Observable<T | undefined> | T | undefined;
+
+export interface AsyncStore<T> {
+  next(value: T): void;
+  subscribe(observer: Partial<Observer<T>>): Subscription;
+  getValue(): T | undefined;
+  load(force?: boolean): Promise<T>;
+}
