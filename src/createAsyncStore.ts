@@ -37,7 +37,15 @@ export function createAsyncStore<T>(
 
     if (getResult instanceof Promise) {
       getPromise = getResult;
-      getSubscription = from(getResult).subscribe(state$);
+
+      getSubscription = from(getResult).subscribe({
+        next: (value) => {
+          state$.next(value);
+        },
+        error: (error) => {
+          state$.error(error);
+        },
+      });
     } else if (getResult instanceof Observable) {
       getPromise = new Promise((resolve, reject) => {
         getSubscription = getResult
@@ -51,7 +59,14 @@ export function createAsyncStore<T>(
               },
             })
           )
-          .subscribe(state$);
+          .subscribe({
+            next: (value) => {
+              state$.next(value);
+            },
+            error: (error) => {
+              state$.error(error);
+            },
+          });
       });
     } else {
       getPromise = Promise.resolve(getResult);

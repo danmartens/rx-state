@@ -1,5 +1,5 @@
 import React, { Suspense, Component, type ReactNode } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 
 import { useAsyncStore } from '../useAsyncStore';
 import { createAsyncStore } from '../createAsyncStore';
@@ -30,6 +30,12 @@ describe('useAsyncStore', () => {
       });
 
       expect(screen.getByTestId('state').textContent).toBe('42');
+
+      act(() => {
+        count.next(43);
+      });
+
+      expect(screen.getByTestId('state').textContent).toBe('43');
     });
   });
 
