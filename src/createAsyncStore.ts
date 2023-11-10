@@ -12,9 +12,18 @@ import {
 import type { AsyncStore, Getter, ObserverOrNext, Setter } from './types';
 import { isDefined } from './utils/isDefined';
 
+export interface Options<T> {
+  logging?: {
+    name: string;
+    state?: boolean | ((state: T) => boolean);
+    subscriptions?: boolean;
+  };
+}
+
 export function createAsyncStore<T>(
   get: Getter<T>,
-  set?: Setter<T>
+  set?: Setter<T>,
+  options: Options<T> = {}
 ): AsyncStore<T> {
   const state$ = new BehaviorSubject<T | undefined>(undefined);
   const distinctState$ = state$.pipe(distinctUntilChanged());
@@ -25,6 +34,8 @@ export function createAsyncStore<T>(
   let setSubscription: Subscription | null = null;
 
   let subscriptionCount = 0;
+
+  const { logging } = options;
 
   const load = (force = false) => {
     if (!force && getPromise != null) {
@@ -108,11 +119,39 @@ export function createAsyncStore<T>(
 
       subscriptionCount++;
 
+      if (process.env.NODE_ENV !== 'production' && logging?.subscriptions) {
+        console.log(`Subscribe (${logging.name})`, {
+          subscriptionCount,
+        });
+      }
+
       return distinctState$
         .pipe(
           filter(isDefined),
+          tap((state) => {
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              logging?.state != null
+            ) {
+              if (
+                (typeof logging.state === 'function' && logging.state(state)) ||
+                logging.state
+              ) {
+                console.log(`State (${logging.name})`, state);
+              }
+            }
+          }),
           finalize(() => {
             subscriptionCount--;
+
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              logging?.subscriptions
+            ) {
+              console.log(`Unsubscribe (${logging.name})`, {
+                subscriptionCount,
+              });
+            }
 
             if (subscriptionCount === 0) {
               getSubscription?.unsubscribe();

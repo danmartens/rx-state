@@ -7,7 +7,12 @@ import { createAsyncStore } from '../createAsyncStore';
 describe('useAsyncStore', () => {
   describe('when the load promise resolves', () => {
     test('renders the suspense boundary', async () => {
-      const count = createAsyncStore(async () => 42);
+      const count = createAsyncStore(
+        async () => 42,
+        async (value) => {
+          return value;
+        }
+      );
 
       const Counter: React.FC = () => {
         const [state] = useAsyncStore(count);
@@ -36,6 +41,12 @@ describe('useAsyncStore', () => {
       });
 
       expect(screen.getByTestId('state').textContent).toBe('43');
+
+      act(() => {
+        count.next(44);
+      });
+
+      expect(screen.getByTestId('state').textContent).toBe('44');
     });
   });
 
