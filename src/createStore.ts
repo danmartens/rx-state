@@ -6,7 +6,14 @@ import {
   finalize,
 } from 'rxjs';
 
-import { Action, Dispatcher, Effect, Store, StoreFactory } from './types';
+import {
+  Action,
+  Dispatcher,
+  Effect,
+  ObserverOrNext,
+  Store,
+  StoreFactory,
+} from './types';
 import { createDispatcher } from './createDispatcher';
 import { formatChangeset } from './utils/formatChangeset';
 import { diffObjects } from './utils/diffObjects';
@@ -132,7 +139,7 @@ export const createStore =
       next: (action: TAction) => {
         dispatch(action);
       },
-      subscribe: (observer: Observer<TState>) => {
+      subscribe: (observerOrNext: ObserverOrNext<TState>) => {
         createActionsSubscription();
         createEffectsSubscription();
 
@@ -155,7 +162,7 @@ export const createStore =
               }
             })
           )
-          .subscribe(observer);
+          .subscribe(observerOrNext);
       },
       getState: () => state$.getValue(),
     };
