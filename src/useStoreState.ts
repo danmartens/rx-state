@@ -6,11 +6,7 @@ export const useStoreState = <TState, TAction extends Action>(
 ) => {
   const subscribe = useCallback(
     (onChange: () => void) => {
-      const subscription = store.subscribe({
-        next: () => {
-          onChange();
-        },
-      });
+      const subscription = store.subscribe(onChange);
 
       return () => {
         subscription.unsubscribe();

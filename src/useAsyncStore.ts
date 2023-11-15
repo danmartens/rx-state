@@ -1,36 +1,17 @@
-import { useSyncExternalStore, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { type AsyncStore } from './types';
-import { type Defined } from './utils/isDefined';
+import { useAsyncStoreState } from './useAsyncStoreState';
 
 export function useAsyncStore<T>(store: AsyncStore<T>) {
-  const getValue = () => {
-    const value = store.getValue();
+  const state = useAsyncStoreState(store);
 
-    if (value === undefined) {
-      throw store.load();
-    }
-
-    return value as Defined<T>;
-  };
-
-  const state = useSyncExternalStore(
-    (callback) => {
-      const subscription = store.subscribe({
-        next: callback,
-      });
-
-      return () => {
-        subscription.unsubscribe();
-      };
+  const setState = useCallback(
+    (nextState: T) => {
+      store.next(nextState);
     },
-    getValue,
-    getValue
+    [store]
   );
-
-  const setState = (nextState: T) => {
-    store.next(nextState);
-  };
 
   const reload = useCallback(() => {
     return store.load(true);
