@@ -8,6 +8,7 @@ export { createStore } from './createStore';
 export { createStoreContext } from './createStoreContext';
 export { ofType } from './ofType';
 export { useAsyncStore } from './useAsyncStore';
+export { useAsyncStoreState } from './useAsyncStoreState';
 export { useStore } from './useStore';
 export { useStoreDispatch } from './useStoreDispatch';
 export { useStoreFactory } from './useStoreFactory';
