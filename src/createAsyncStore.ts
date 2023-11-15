@@ -5,11 +5,12 @@ import {
   filter,
   finalize,
   from,
-  tap,
   share,
+  tap,
   type Subscription,
 } from 'rxjs';
 
+import { error, ok, toResult, type Result } from './result';
 import type { AsyncStore, Getter, ObserverOrNext, Setter } from './types';
 import { isDefined } from './utils/isDefined';
 
@@ -26,18 +27,23 @@ export function createAsyncStore<T>(
   set?: Setter<T>,
   options: Options<T> = {}
 ): AsyncStore<T> {
-  const state$ = new BehaviorSubject<T | undefined>(undefined);
+  const state$ = new BehaviorSubject<Result<T> | undefined>(undefined);
 
   const distinctState$ = state$.pipe(
     filter(isDefined),
-    distinctUntilChanged(),
+    distinctUntilChanged((previous, current) => previous.equalTo(current)),
     tap((state) => {
-      if (process.env.NODE_ENV !== 'production' && logging?.state != null) {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        logging?.state != null &&
+        state.isOk()
+      ) {
         if (
-          (typeof logging.state === 'function' && logging.state(state)) ||
+          (typeof logging.state === 'function' &&
+            logging.state(state.valueOf())) ||
           logging.state
         ) {
-          console.log(`State (${logging.name})`, state);
+          console.log(`State (${logging.name})`, state.valueOf());
         }
       }
     }),
@@ -53,60 +59,61 @@ export function createAsyncStore<T>(
 
   const { logging } = options;
 
-  const load = (force = false) => {
+  const load = (force = false): Promise<T> => {
     if (!force && getPromise != null) {
       return getPromise;
     }
 
     getSubscription?.unsubscribe();
 
-    const getResult = get();
+    try {
+      const getValue = get();
 
-    if (getResult instanceof Promise) {
-      getPromise = getResult;
+      if (getValue instanceof Promise) {
+        getPromise = getValue;
 
-      getSubscription = from(getResult).subscribe({
-        next: (value) => {
-          state$.next(value);
-        },
-        error: (error) => {
-          state$.error(error);
-        },
-      });
-    } else if (getResult instanceof Observable) {
-      getPromise = new Promise((resolve, reject) => {
-        getSubscription = getResult
-          .pipe(
-            tap({
-              next: (value) => {
-                resolve(value);
-              },
-              error: (error) => {
-                reject(error);
-              },
-            })
-          )
-          .subscribe({
-            next: (value) => {
-              state$.next(value);
-            },
-            error: (error) => {
-              state$.error(error);
-            },
+        getSubscription = from(getValue)
+          .pipe(toResult())
+          .subscribe((value) => {
+            state$.next(value);
           });
-      });
-    } else {
-      getPromise = Promise.resolve(getResult);
+      } else if (getValue instanceof Observable) {
+        getPromise = new Promise((resolve, reject) => {
+          getSubscription = getValue
+            .pipe(
+              tap({
+                next: (value) => {
+                  resolve(value);
+                },
+                error: (error) => {
+                  reject(error);
+                },
+              }),
+              toResult()
+            )
+            .subscribe((value) => {
+              state$.next(value);
+            });
+        });
+      } else {
+        getPromise = Promise.resolve(getValue);
 
-      state$.next(getResult);
+        state$.next(ok(getValue));
+      }
+
+      return getPromise;
+    } catch (value) {
+      state$.next(error(value));
+
+      return Promise.reject(value);
     }
-
-    return getPromise;
   };
 
   return {
-    next: (value: T) => {
-      if (value === state$.getValue()) {
+    next: (nextValue: T) => {
+      const value = state$.getValue();
+
+      if (value?.isOk() && nextValue === value.valueOf()) {
         return;
       }
 
@@ -116,37 +123,29 @@ export function createAsyncStore<T>(
       getSubscription = null;
       setSubscription = null;
 
-      state$.next(value);
+      state$.next(ok(nextValue));
 
       if (set != null) {
-        const setResult = set(value);
+        const setResult = set(nextValue);
 
         if (setResult instanceof Promise) {
           setSubscription = from(setResult)
-            .pipe(filter(isDefined))
-            .subscribe({
-              next: (value) => {
-                state$.next(value);
-              },
-              error: (error) => {
-                state$.error(error);
-              },
+            .pipe(filter(isDefined), toResult())
+            .subscribe((value) => {
+              state$.next(value);
             });
         } else if (setResult instanceof Observable) {
-          setSubscription = setResult.pipe(filter(isDefined)).subscribe({
-            next: (value) => {
+          setSubscription = setResult
+            .pipe(filter(isDefined), toResult())
+            .subscribe((value) => {
               state$.next(value);
-            },
-            error: (error) => {
-              state$.error(error);
-            },
-          });
+            });
         } else if (setResult != null) {
-          state$.next(setResult);
+          state$.next(ok(setResult));
         }
       }
     },
-    subscribe: (observerOrNext: ObserverOrNext<T>) => {
+    subscribe: (observerOrNext: ObserverOrNext<Result<T>>) => {
       if (subscriptionCount === 0) {
         load();
       }

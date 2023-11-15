@@ -1,7 +1,6 @@
 import { useSyncExternalStore, useCallback } from 'react';
 
 import { type AsyncStore } from './types';
-import { type Defined } from './utils/isDefined';
 
 export function useAsyncStore<T>(store: AsyncStore<T>) {
   const subscribe = useCallback(
@@ -15,14 +14,14 @@ export function useAsyncStore<T>(store: AsyncStore<T>) {
     [store]
   );
 
-  const getValue = useCallback(() => {
+  const getValue = useCallback((): T => {
     const value = store.getValue();
 
     if (value === undefined) {
       throw store.load();
     }
 
-    return value as Defined<T>;
+    return value.orThrow();
   }, [store]);
 
   const state = useSyncExternalStore(subscribe, getValue, getValue);
