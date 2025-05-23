@@ -1,5 +1,5 @@
 import { createAsyncStore } from '../createAsyncStore';
-import { Result, error, ok } from '../result';
+import { type Result, error, ok } from '../result';
 
 describe('createAsyncStore', () => {
   test('load should return a stable promise', () => {

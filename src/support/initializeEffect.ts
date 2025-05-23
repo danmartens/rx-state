@@ -1,6 +1,6 @@
 import { Observable, Subject, filter } from 'rxjs';
 
-import { Action, ActionOfType, Effect } from '../types';
+import type { Action, ActionOfType, Effect } from '../types';
 
 export const initializeEffect = <
   TAction extends Action,

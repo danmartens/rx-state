@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs';
+
 import { mapActions } from '../mapActions';
 
 interface PingAction {

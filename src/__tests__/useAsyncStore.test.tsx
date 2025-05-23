@@ -1,8 +1,8 @@
-import React, { Suspense, Component, type ReactNode } from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
+import React, { Suspense, Component, type ReactNode } from 'react';
 
-import { useAsyncStore } from '../useAsyncStore';
 import { createAsyncStore } from '../createAsyncStore';
+import { useAsyncStore } from '../useAsyncStore';
 
 describe('useAsyncStore', () => {
   describe('when the load promise resolves', () => {

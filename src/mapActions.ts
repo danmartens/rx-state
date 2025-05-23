@@ -1,6 +1,6 @@
-import { EMPTY, Observable, OperatorFunction, mergeMap, of } from 'rxjs';
+import { EMPTY, Observable, type OperatorFunction, mergeMap, of } from 'rxjs';
 
-import { Action, ActionOfType } from './types';
+import type { Action, ActionOfType } from './types';
 
 export const mapActions =
   <

@@ -1,6 +1,8 @@
 import { BehaviorSubject, delay, map, tap } from 'rxjs';
+
+import type { Effect } from '../../types';
+
 import { ofType } from '../../ofType';
-import { Effect } from '../../types';
 import { initializeEffect } from '../initializeEffect';
 
 describe('initializeEffect()', () => {

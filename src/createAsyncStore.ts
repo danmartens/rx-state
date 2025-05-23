@@ -10,8 +10,9 @@ import {
   type Subscription,
 } from 'rxjs';
 
-import { error, ok, toResult, type Result } from './result';
 import type { AsyncStore, Getter, ObserverOrNext, Setter } from './types';
+
+import { error, ok, toResult, type Result } from './result';
 import { isDefined } from './utils/isDefined';
 
 export interface Options<T> {

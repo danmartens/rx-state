@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-import { Action, StoreFactory } from './types';
+import type { Action, StoreFactory } from './types';
+
 import { useStore } from './useStore';
 
 export const useStoreFactory = <
