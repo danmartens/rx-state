@@ -1,23 +1,20 @@
-export function getIn<T extends Record<string, unknown>, K1 extends keyof T>(
+export function getIn<T, K1 extends keyof T>(target: T, arg1: K1): T[K1];
+
+export function getIn<T, K1 extends keyof T, K2 extends keyof T[K1]>(
   target: T,
-  arg1: K1
-): T[K1];
+  arg1: K1,
+  arg2?: K2
+): T[K1][K2];
 
 export function getIn<
-  T extends Record<string, unknown>,
-  K1 extends keyof T,
-  K2 extends keyof T[K1]
->(target: T, arg1: K1, arg2?: K2): T[K1][K2];
-
-export function getIn<
-  T extends Record<string, unknown>,
+  T,
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2]
 >(target: T, arg1: K1, arg2?: K2, arg3?: K3): T[K1][K2][K3];
 
 export function getIn<
-  T extends Record<string, unknown>,
+  T,
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
@@ -25,7 +22,7 @@ export function getIn<
 >(target: T, arg1: K1, arg2?: K2, arg3?: K3, arg4?: K4): T[K1][K2][K3][K4];
 
 export function getIn<
-  T extends Record<string, unknown>,
+  T,
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
