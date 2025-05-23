@@ -1,4 +1,6 @@
-import React, { ReactNode } from 'react';
+/* eslint-disable react-compiler/react-compiler */
+
+import { ReactNode } from 'react';
 import { render, act } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 

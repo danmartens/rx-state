@@ -39,7 +39,7 @@ export const createStore =
   <
     TState,
     TAction extends Action,
-    TDependencies extends Record<string, unknown> = {},
+    TDependencies extends Record<string, unknown> = Record<string, unknown>,
   >(
     reducer: (state: TState, action: TAction) => TState,
     effects: Effect<TAction, TState, TDependencies>[] = [],

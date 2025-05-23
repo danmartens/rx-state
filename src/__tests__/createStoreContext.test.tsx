@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react';
 
 import { createStore } from '../createStore';
