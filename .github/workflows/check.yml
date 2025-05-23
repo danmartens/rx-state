@@ -22,11 +22,6 @@ jobs:
           node-version: '22.x'
           cache: 'yarn'
 
-      - name: Install Yarn from corepack
-        run: |
-          corepack enable
-          corepack prepare yarn@3.5.0 --activate
-
       - name: Install Dependencies
         run: yarn install --immutable
 
