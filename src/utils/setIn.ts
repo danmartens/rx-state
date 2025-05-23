@@ -1,3 +1,5 @@
+import { isObject } from './isObject';
+
 export function setIn<T extends Record<string, unknown>, K1 extends keyof T>(
   target: T,
   key1: K1,
@@ -153,8 +155,4 @@ function assertObject(
       'Target is not an object and therefore cannot be updated via setIn'
     );
   }
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }

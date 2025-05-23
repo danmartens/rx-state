@@ -16,7 +16,7 @@ import {
 import { createDispatcher } from './createDispatcher';
 import { formatChangeset } from './utils/formatChangeset';
 import { diffObjects } from './utils/diffObjects';
-import { isRecord } from './utils/isRecord';
+import { isObject } from './utils/isObject';
 
 interface Options<TState, TAction extends Action> {
   /**
@@ -85,7 +85,7 @@ export const createStore =
           ((typeof logging.state === 'function' && logging.state(nextState)) ||
             logging.state === true)
         ) {
-          if (isRecord(state) && isRecord(nextState)) {
+          if (isObject(state) && isObject(nextState)) {
             console.log(formatChangeset(diffObjects(state, nextState)));
           }
         }

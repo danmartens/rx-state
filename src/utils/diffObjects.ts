@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import { isRecord } from './isRecord';
+import { isObject } from './isObject';
 
 export type Changeset<T extends Record<string, unknown>> = {
   [K in keyof T]?: T[K] extends Record<string, unknown>
@@ -16,7 +16,7 @@ export const diffObjects = <T extends Readonly<Record<string, unknown>>>(
 
   for (const key of Object.keys(objectA)) {
     if (objectA[key] !== objectB[key]) {
-      if (isRecord(objectA[key]) && isRecord(objectB[key])) {
+      if (isObject(objectA[key]) && isObject(objectB[key])) {
         // @ts-expect-error
         changes[key as keyof T] = diffObjects(
           // @ts-expect-error
