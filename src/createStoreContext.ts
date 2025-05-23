@@ -16,7 +16,7 @@ import { useStoreState } from './useStoreState';
 export const createStoreContext = <
   TState,
   TAction extends Action,
-  TDependencies extends Record<string, unknown> = {},
+  TDependencies extends Record<string, unknown> = Record<string, unknown>,
 >(
   storeFactory: StoreFactory<TState, TAction, TDependencies>,
 ) => {

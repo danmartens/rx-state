@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { Observable, Observer, Subject, Subscription } from 'rxjs';
 
 import type { Result } from './result';
@@ -15,6 +13,7 @@ export type ActionOfType<
   TType extends TAction['type'],
 > = Extract<Action, { type: TType }>;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Dispatcher<TAction extends Action> extends Subject<TAction> {}
 
 export interface Store<TState, TAction extends Action> {
@@ -26,7 +25,7 @@ export interface Store<TState, TAction extends Action> {
 export type StoreFactory<
   TState,
   TAction extends Action,
-  TDependencies extends Record<string, unknown> = {},
+  TDependencies extends Record<string, unknown> = Record<string, unknown>,
 > = (
   initialState: TState,
   dependencies: TDependencies,
@@ -35,7 +34,7 @@ export type StoreFactory<
 export type Effect<
   TAction extends Action,
   TState,
-  TDependencies extends Record<string, unknown> = {},
+  TDependencies extends Record<string, unknown> = Record<string, unknown>,
 > = (
   action$: Dispatcher<TAction>,
   state$: Observable<TState>,
