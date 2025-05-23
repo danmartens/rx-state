@@ -19,7 +19,7 @@ describe('useStore()', () => {
     const store = createStore(
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
-      []
+      [],
     )(42, {});
 
     const { result, unmount } = renderHook(() => useStore(store));

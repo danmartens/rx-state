@@ -10,7 +10,7 @@ describe('createActionDispatchHook', () => {
     const storeFactory = createStore(
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
-      []
+      [],
     );
 
     const { Provider, useStore, createActionDispatchHook } =
@@ -43,7 +43,7 @@ describe('createActionDispatchHook', () => {
     render(
       <ProviderComponent>
         <ConsumerComponent />
-      </ProviderComponent>
+      </ProviderComponent>,
     );
 
     expect(screen.getByRole('heading')).toHaveTextContent('42');

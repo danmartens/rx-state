@@ -2,7 +2,7 @@ type RecordValue<T> = T extends Record<string, infer V> ? V : never;
 
 export const mapEntries = <T extends Readonly<Record<string, any>>>(
   target: T,
-  updater: (entry: [keyof T, RecordValue<T>]) => RecordValue<T>
+  updater: (entry: [keyof T, RecordValue<T>]) => RecordValue<T>,
 ): T => {
   let modified = false;
 

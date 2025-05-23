@@ -18,7 +18,7 @@ describe('createStoreContext', () => {
 
     const { result, unmount } = renderHook(
       () => Context.useSelector((state) => state),
-      { wrapper }
+      { wrapper },
     );
 
     const state = result.current;
@@ -32,7 +32,7 @@ describe('createStoreContext', () => {
     const storeFactory = createStore(
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
-      []
+      [],
     );
 
     const { Provider, useStore } = createStoreContext(storeFactory);

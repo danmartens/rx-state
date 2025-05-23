@@ -4,23 +4,23 @@ type ImmutableArray<T = unknown> = ReadonlyArray<T>;
 export function set<T extends ImmutableRecord, K extends keyof T>(
   target: T,
   key: K,
-  value: T[K]
+  value: T[K],
 ): T;
 
 export function set<T extends ImmutableArray, K extends keyof T>(
   target: T,
   key: K,
-  value: T[K]
+  value: T[K],
 ): T;
 
 export function set<
   T extends ImmutableRecord | ImmutableArray,
-  K extends keyof T
+  K extends keyof T,
 >(target: T, key: K, value: T[K]): T;
 
 export function set<
   T extends ImmutableRecord | ImmutableArray,
-  K extends keyof T
+  K extends keyof T,
 >(target: T, key: K, value: T[K]): T {
   if (target[key] === value) {
     return target;

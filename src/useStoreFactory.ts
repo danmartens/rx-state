@@ -6,11 +6,11 @@ import { useStore } from './useStore';
 export const useStoreFactory = <
   TState,
   TAction extends Action,
-  TDependencies extends Record<string, unknown>
+  TDependencies extends Record<string, unknown>,
 >(
   factory: StoreFactory<TState, TAction, TDependencies>,
   initialState: TState,
-  dependencies: TDependencies
+  dependencies: TDependencies,
 ) => {
   const [store] = useState(() => factory(initialState, dependencies));
 

@@ -11,7 +11,7 @@ describe('useAsyncStore', () => {
         async () => 42,
         async (value) => {
           return value;
-        }
+        },
       );
 
       const Counter: React.FC = () => {
@@ -23,7 +23,7 @@ describe('useAsyncStore', () => {
       render(
         <Suspense fallback={<div data-testid="suspense">Loading...</div>}>
           <Counter />
-        </Suspense>
+        </Suspense>,
       );
 
       expect(screen.getByTestId('suspense')).toBeVisible();
@@ -65,7 +65,7 @@ describe('useAsyncStore', () => {
 
     test('renders the error boundary', async () => {
       const count = createAsyncStore(() =>
-        Promise.reject(new Error('Test error'))
+        Promise.reject(new Error('Test error')),
       );
 
       const Counter: React.FC = () => {
@@ -79,7 +79,7 @@ describe('useAsyncStore', () => {
           <Suspense fallback={<div data-testid="suspense">Loading...</div>}>
             <Counter />
           </Suspense>
-        </ErrorBoundary>
+        </ErrorBoundary>,
       );
 
       expect(screen.getByTestId('suspense')).toBeVisible();

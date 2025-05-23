@@ -147,7 +147,7 @@ const persistPost = (action$) =>
             'content-type': 'application/json',
           },
           body: JSON.stringify(action.data),
-        })
+        }),
       ).pipe(
         map(() => ({
           type: 'CREATE_POST_SUCCESS',
@@ -160,9 +160,9 @@ const persistPost = (action$) =>
             type: 'CREATE_POST_ERROR',
             data: { slug: action.data.slug },
           });
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
 const postsStore = createStore(reducer, [persistPost])({
@@ -234,7 +234,7 @@ const notificationsStore = createStore<{ message: string }[], Action>(
   [],
   {
     action$,
-  }
+  },
 );
 
 const postsStore = createStore<State, Action>(
@@ -263,13 +263,13 @@ const postsStore = createStore<State, Action>(
               };
             }
           }
-        })
+        }),
       );
     },
   ],
   {
     action$,
-  }
+  },
 )({});
 ```
 
@@ -328,7 +328,7 @@ is non-primitive. For example:
 ```tsx
 const ActiveUsers = () => {
   const activeUsers = useSelector((state: State) =>
-    state.users.filter((user) => user.isActive)
+    state.users.filter((user) => user.isActive),
   );
 
   // ...
@@ -345,7 +345,7 @@ We can improve this using `createSelector()`:
 ```tsx
 const getActiveUsers = createSelector(
   (state: State) => state.users,
-  (users) => users.filter((user) => user.isActive)
+  (users) => users.filter((user) => user.isActive),
 );
 
 const ActiveUsers = () => {

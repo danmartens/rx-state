@@ -16,7 +16,7 @@ describe('createStore', () => {
     const store = createStore(
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
-      []
+      [],
     )(42, {});
 
     const subscription = store.subscribe({ next: () => {} });
@@ -75,7 +75,7 @@ describe('createStore', () => {
       (state: number, action: { type: 'INCREMENT' }) =>
         action.type === 'INCREMENT' ? state + 1 : state,
       [],
-      { action$ }
+      { action$ },
     );
 
     const store1 = storeFactory(42, {});
@@ -109,9 +109,9 @@ describe('createStore', () => {
           (action$) =>
             action$.pipe(
               filter((action) => action.type === 'PING'),
-              map(() => ({ type: 'PONG' } satisfies Action))
+              map(() => ({ type: 'PONG' }) satisfies Action),
             ),
-        ]
+        ],
       )([], {});
 
       const subscription = store.subscribe({ next: () => {} });
@@ -135,9 +135,9 @@ describe('createStore', () => {
           (action$) =>
             action$.pipe(
               filter((action) => action.type === 'PING'),
-              map(() => ({ type: 'PONG' } satisfies Action))
+              map(() => ({ type: 'PONG' }) satisfies Action),
             ),
-        ]
+        ],
       )([], {});
 
       const subscription1 = store.subscribe({ next: () => {} });
@@ -173,9 +173,9 @@ describe('createStore', () => {
                 tap((action) => {
                   actions.push(action.type);
                 }),
-                map(() => ({ type: 'PONG' } satisfies Action))
+                map(() => ({ type: 'PONG' }) satisfies Action),
               ),
-          ]
+          ],
         )([], {});
 
         store.next({ type: 'PING' });
@@ -216,10 +216,10 @@ describe('createStore', () => {
                 tap((action) => {
                   actions.push(action.type);
                 }),
-                map(() => ({ type: 'PONG' } satisfies Action))
+                map(() => ({ type: 'PONG' }) satisfies Action),
               ),
           ],
-          { hot: true }
+          { hot: true },
         )([], {});
 
         store.next({ type: 'PING' });

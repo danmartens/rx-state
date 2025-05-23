@@ -11,15 +11,15 @@ export function createCancelableEffect<
   TOutput extends TInput = Extract<TInput, Action<TType>>,
   TEffect extends (action: TOutput, state: TState) => PromiseLike<TInput> = (
     action: TOutput,
-    state: TState
-  ) => PromiseLike<TInput>
+    state: TState,
+  ) => PromiseLike<TInput>,
 >(
   type: TType,
   cancelTypes: Array<TCancelType>,
-  effect: TEffect
+  effect: TEffect,
 ): (
   action$: Observable<TInput | Action>,
-  state$: Observable<TState>
+  state$: Observable<TState>,
 ) => Observable<TInput> {
   return (action$, state$) =>
     action$.pipe(
@@ -31,11 +31,11 @@ export function createCancelableEffect<
             action$.pipe(
               ofType<TInput | Action, TCancelType, TOutput>(
                 cancelTypes[0],
-                ...cancelTypes.slice(1)
-              )
-            )
-          )
-        )
-      )
+                ...cancelTypes.slice(1),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
 }

@@ -1,6 +1,6 @@
 export const merge = <T extends Record<string, unknown>, S extends Partial<T>>(
   target: T,
-  source: S
+  source: S,
 ): T => {
   if (Object.keys(source).length === 0) {
     return target;
@@ -8,10 +8,10 @@ export const merge = <T extends Record<string, unknown>, S extends Partial<T>>(
 
   if (
     Object.keys(target).some(
-      (key) => source[key] !== undefined && source[key] !== target[key]
+      (key) => source[key] !== undefined && source[key] !== target[key],
     ) ||
     Object.keys(source).some(
-      (key) => source[key] !== undefined && target[key] === undefined
+      (key) => source[key] !== undefined && target[key] === undefined,
     )
   ) {
     return {

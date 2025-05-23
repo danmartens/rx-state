@@ -7,21 +7,21 @@ describe('initializeEffect()', () => {
   describe('dispatch()', () => {
     test('dispatches an action asynchronously', async () => {
       const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
-        action$
+        action$,
       ) => {
         return action$.pipe(
           ofType('PING'),
           delay(100),
           map(() => ({
             type: 'PONG',
-          }))
+          })),
         );
       };
 
       const { dispatch, nextAction } = initializeEffect(
         effect,
         new BehaviorSubject(0),
-        {}
+        {},
       );
 
       dispatch({ type: 'PING' });
@@ -37,7 +37,7 @@ describe('initializeEffect()', () => {
       const sideEffect = jest.fn();
 
       const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
-        action$
+        action$,
       ) => {
         return action$.pipe(
           ofType('PING'),
@@ -46,14 +46,14 @@ describe('initializeEffect()', () => {
           }),
           map(() => ({
             type: 'PONG',
-          }))
+          })),
         );
       };
 
       const { dispatchImmediately } = initializeEffect(
         effect,
         new BehaviorSubject(0),
-        {}
+        {},
       );
 
       dispatchImmediately({ type: 'PING' });
@@ -63,20 +63,20 @@ describe('initializeEffect()', () => {
 
     test('unhandled errors are thrown', async () => {
       const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
-        action$
+        action$,
       ) => {
         return action$.pipe(
           ofType('PING'),
           map(() => {
             throw new Error('Something went wrong');
-          })
+          }),
         );
       };
 
       const { dispatchImmediately } = initializeEffect(
         effect,
         new BehaviorSubject(0),
-        {}
+        {},
       );
 
       expect(() => {

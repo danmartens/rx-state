@@ -37,7 +37,7 @@ describe('createSelector', () => {
     };
 
     const getPosts = createSelector((state: State) =>
-      Object.values(state.posts)
+      Object.values(state.posts),
     );
 
     expect(getPosts(state)).toEqual([state.posts['1']]);
@@ -59,8 +59,8 @@ describe('createSelector', () => {
 
     const getSortedPosts = createSelector(getPosts, (posts) =>
       Object.values(posts).sort((postA, postB) =>
-        postA.title.localeCompare(postB.title)
-      )
+        postA.title.localeCompare(postB.title),
+      ),
     );
 
     expect(getSortedPosts(state)).toEqual([
@@ -97,9 +97,9 @@ describe('createSelector', () => {
         Object.values(posts).map((post) => ({
           ...post,
           comments: Object.values(comments).filter(
-            (comment) => comment.postId === post.id
+            (comment) => comment.postId === post.id,
           ),
-        }))
+        })),
     );
 
     expect(getPostsAndComments(state)).toEqual([
@@ -165,7 +165,7 @@ describe('createSelector', () => {
               ...comment,
               author: users[comment.authorId],
             })),
-        }))
+        })),
     );
 
     expect(getPostsAndCommentsWithUsers(state)).toEqual([
@@ -201,7 +201,7 @@ describe('createSelector', () => {
     ]);
 
     expect(getPostsAndCommentsWithUsers(state)).toBe(
-      getPostsAndCommentsWithUsers(state)
+      getPostsAndCommentsWithUsers(state),
     );
 
     expect(getUsers).toHaveBeenCalledTimes(1);
@@ -211,7 +211,7 @@ describe('createSelector', () => {
     const nextState = { ...state };
 
     expect(getPostsAndCommentsWithUsers(nextState)).toBe(
-      getPostsAndCommentsWithUsers(nextState)
+      getPostsAndCommentsWithUsers(nextState),
     );
 
     expect(getUsers).toHaveBeenCalledTimes(2);

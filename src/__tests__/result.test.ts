@@ -14,7 +14,7 @@ describe('Result', () => {
       expect(error(value).equalTo(error(value))).toBe(true);
 
       expect(error(value).equalTo(error(new Error('Other test error')))).toBe(
-        false
+        false,
       );
     });
   });

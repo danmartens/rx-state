@@ -6,20 +6,20 @@ type Updater<T> = (value: T) => T;
 export function updateIn<T extends Record<string, unknown>, K1 extends keyof T>(
   target: T,
   key1: K1,
-  updater: Updater<T[K1]>
+  updater: Updater<T[K1]>,
 ): T;
 
 export function updateIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
-  K2 extends keyof T[K1]
+  K2 extends keyof T[K1],
 >(target: T, key1: K1, key2: K2, updater: Updater<T[K1][K2]>): T;
 
 export function updateIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
   K2 extends keyof T[K1],
-  K3 extends keyof T[K1][K2]
+  K3 extends keyof T[K1][K2],
 >(target: T, key1: K1, key2: K2, key3: K3, updater: Updater<T[K1][K2][K3]>): T;
 
 export function updateIn<
@@ -27,14 +27,14 @@ export function updateIn<
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
-  K4 extends keyof T[K1][K2][K3]
+  K4 extends keyof T[K1][K2][K3],
 >(
   target: T,
   key1: K1,
   key2: K2,
   key3: K3,
   key4: K4,
-  updater: Updater<T[K1][K2][K3][K4]>
+  updater: Updater<T[K1][K2][K3][K4]>,
 ): T;
 
 export function updateIn<
@@ -42,14 +42,14 @@ export function updateIn<
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
-  K4 extends keyof T[K1][K2][K3]
+  K4 extends keyof T[K1][K2][K3],
 >(
   target: T,
   arg1: K1,
   arg2: K2 | Updater<T[K1]>,
   arg3?: K3 | Updater<T[K1][K2]>,
   arg4?: K4 | Updater<T[K1][K2][K3]>,
-  arg5?: Updater<T[K1][K2][K3][K4]>
+  arg5?: Updater<T[K1][K2][K3][K4]>,
 ): T;
 
 export function updateIn<
@@ -57,14 +57,14 @@ export function updateIn<
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
-  K4 extends keyof T[K1][K2][K3]
+  K4 extends keyof T[K1][K2][K3],
 >(
   target: T,
   arg1: K1,
   arg2: K2 | Updater<T[K1]>,
   arg3?: K3 | Updater<T[K1][K2]>,
   arg4?: K4 | Updater<T[K1][K2][K3]>,
-  arg5?: Updater<T[K1][K2][K3][K4]>
+  arg5?: Updater<T[K1][K2][K3][K4]>,
 ): T {
   const key1 = arg1;
 
@@ -92,7 +92,7 @@ export function updateIn<
       key1,
       key2,
       key3,
-      update(getIn(target, key1, key2, key3))
+      update(getIn(target, key1, key2, key3)),
     );
   }
 
@@ -107,7 +107,7 @@ export function updateIn<
       key2,
       key3,
       key4,
-      update(getIn(target, key1, key2, key3, key4))
+      update(getIn(target, key1, key2, key3, key4)),
     );
   }
 

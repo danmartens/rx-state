@@ -13,8 +13,8 @@ type OrderState = {
 const getLineItemIds = compose(
   (state: OrderState) => state.lineItems,
   createSelector((lineItems: OrderState['lineItems']) =>
-    lineItems.map((lineItem) => lineItem.id)
-  )
+    lineItems.map((lineItem) => lineItem.id),
+  ),
 );
 
 describe('compose', () => {

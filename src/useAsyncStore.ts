@@ -10,7 +10,7 @@ export function useAsyncStore<T>(store: AsyncStore<T>) {
     (nextState: T) => {
       store.next(nextState);
     },
-    [store]
+    [store],
   );
 
   const reload = useCallback(() => {

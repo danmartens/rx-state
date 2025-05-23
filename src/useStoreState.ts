@@ -2,7 +2,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 import { Action, Store } from './types';
 
 export const useStoreState = <TState, TAction extends Action>(
-  store: Store<TState, TAction>
+  store: Store<TState, TAction>,
 ) => {
   const subscribe = useCallback(
     (onChange: () => void) => {
@@ -12,7 +12,7 @@ export const useStoreState = <TState, TAction extends Action>(
         subscription.unsubscribe();
       };
     },
-    [store]
+    [store],
   );
 
   return useSyncExternalStore(subscribe, store.getState, store.getState);

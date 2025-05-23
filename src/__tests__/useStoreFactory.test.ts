@@ -10,7 +10,7 @@ describe('useStoreFactory()', () => {
     const stateRef = { current: initialState };
 
     const { result, rerender } = renderHook(() =>
-      useStoreFactory(factory, stateRef.current, {})
+      useStoreFactory(factory, stateRef.current, {}),
     );
 
     expect(result.current[0]).toBe(initialState);

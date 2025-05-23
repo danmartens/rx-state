@@ -3,20 +3,20 @@ import { isObject } from './isObject';
 export function setIn<T extends Record<string, unknown>, K1 extends keyof T>(
   target: T,
   key1: K1,
-  value: T[K1]
+  value: T[K1],
 ): T;
 
 export function setIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
-  K2 extends keyof T[K1]
+  K2 extends keyof T[K1],
 >(target: T, key1: K1, key2: K2, value: T[K1][K2]): T;
 
 export function setIn<
   T extends Record<string, unknown>,
   K1 extends keyof T,
   K2 extends keyof T[K1],
-  K3 extends keyof T[K1][K2]
+  K3 extends keyof T[K1][K2],
 >(target: T, key1: K1, key2: K2, key3: K3, value: T[K1][K2][K3]): T;
 
 export function setIn<
@@ -24,14 +24,14 @@ export function setIn<
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
-  K4 extends keyof T[K1][K2][K3]
+  K4 extends keyof T[K1][K2][K3],
 >(
   target: T,
   key1: K1,
   key2: K2,
   key3: K3,
   key4: K4,
-  value: T[K1][K2][K3][K4]
+  value: T[K1][K2][K3][K4],
 ): T;
 
 export function setIn<
@@ -39,14 +39,14 @@ export function setIn<
   K1 extends keyof T,
   K2 extends keyof T[K1],
   K3 extends keyof T[K1][K2],
-  K4 extends keyof T[K1][K2][K3]
+  K4 extends keyof T[K1][K2][K3],
 >(
   target: T,
   arg1: K1,
   arg2: K2 | T[K1],
   arg3?: K3 | T[K1][K2],
   arg4?: K4 | T[K1][K2][K3],
-  arg5?: T[K1][K2][K3][K4]
+  arg5?: T[K1][K2][K3][K4],
 ): T {
   assertObject(target);
 
@@ -146,13 +146,13 @@ function assertObject(
     if (keyPath.length > 0) {
       throw new TypeError(
         `Value at key path "${keyPath.join(
-          '.'
-        )}" is a ${typeof value} and therefore cannot be updated via setIn`
+          '.',
+        )}" is a ${typeof value} and therefore cannot be updated via setIn`,
       );
     }
 
     throw new TypeError(
-      'Target is not an object and therefore cannot be updated via setIn'
+      'Target is not an object and therefore cannot be updated via setIn',
     );
   }
 }

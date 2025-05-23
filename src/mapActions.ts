@@ -7,9 +7,9 @@ export const mapActions =
     TAction extends Action,
     TMap extends {
       [K in TAction['type']]?: (action: ActionOfType<TAction, K>) => TAction;
-    }
+    },
   >(
-    actionMap: TMap
+    actionMap: TMap,
   ): OperatorFunction<TAction, TAction> =>
   (action$: Observable<TAction>) =>
     action$.pipe(
@@ -21,5 +21,5 @@ export const mapActions =
         }
 
         return EMPTY;
-      })
+      }),
     );

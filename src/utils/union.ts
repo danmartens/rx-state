@@ -1,6 +1,6 @@
 export const union = <T>(
   target: ReadonlyArray<T>,
-  source: ReadonlyArray<T>
+  source: ReadonlyArray<T>,
 ): ReadonlyArray<T> => {
   if (target === source) {
     return target;

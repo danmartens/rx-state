@@ -71,7 +71,7 @@ describe('createAsyncStore', () => {
   test('returning a value from the setter should update the state', async () => {
     const count = createAsyncStore(
       async () => 42,
-      async (value) => value + 1
+      async (value) => value + 1,
     );
 
     const values: Result<number>[] = [];

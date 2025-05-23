@@ -8,7 +8,7 @@ describe('useStoreSelector()', () => {
     const store = createStore((state: number) => state, [])(42, {});
 
     const { result, unmount } = renderHook(() =>
-      useStoreSelector(store, (state) => state * 2)
+      useStoreSelector(store, (state) => state * 2),
     );
 
     expect(result.current).toEqual(42 * 2);

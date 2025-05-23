@@ -10,7 +10,7 @@ export type Changeset<T extends Record<string, unknown>> = {
 
 export const diffObjects = <T extends Readonly<Record<string, unknown>>>(
   objectA: T,
-  objectB: T
+  objectB: T,
 ): Changeset<T> => {
   const changes: Changeset<T> = {};
 
@@ -21,7 +21,7 @@ export const diffObjects = <T extends Readonly<Record<string, unknown>>>(
         changes[key as keyof T] = diffObjects(
           // @ts-expect-error
           objectA[key] as T[typeof key],
-          objectB[key] as T[typeof key]
+          objectB[key] as T[typeof key],
         );
       } else {
         // @ts-expect-error
