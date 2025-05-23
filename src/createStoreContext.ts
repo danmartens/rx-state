@@ -16,9 +16,9 @@ import { useStoreState } from './useStoreState';
 export const createStoreContext = <
   TState,
   TAction extends Action,
-  TDependencies extends Record<string, unknown> = {}
+  TDependencies extends Record<string, unknown> = {},
 >(
-  storeFactory: StoreFactory<TState, TAction, TDependencies>
+  storeFactory: StoreFactory<TState, TAction, TDependencies>,
 ) => {
   const StoreContext = createContext<Store<TState, TAction> | null>(null);
 
@@ -53,7 +53,7 @@ export const createStoreContext = <
           subscription.unsubscribe();
         };
       },
-      [store]
+      [store],
     );
 
     if (store == null) {
@@ -63,7 +63,7 @@ export const createStoreContext = <
     return useSyncExternalStore(
       subscribe,
       () => selector(store.getState()),
-      () => selector(store.getState())
+      () => selector(store.getState()),
     );
   };
 
@@ -78,7 +78,7 @@ export const createStoreContext = <
       (action: TAction) => {
         store.next(action);
       },
-      [store]
+      [store],
     );
   };
 
@@ -96,9 +96,9 @@ export const createStoreContext = <
   };
 
   const createActionDispatchHook = <
-    TActionCreators extends Record<string, (...args: any[]) => TAction>
+    TActionCreators extends Record<string, (...args: any[]) => TAction>,
   >(
-    actionCreators: TActionCreators
+    actionCreators: TActionCreators,
   ) => {
     return () => {
       const dispatch = useDispatch();
@@ -107,7 +107,7 @@ export const createStoreContext = <
         return Object.fromEntries(
           Object.entries(actionCreators).map(([key, actionCreator]) => {
             return [key, (...args) => dispatch(actionCreator(...args))];
-          })
+          }),
         ) as {
           [K in keyof TActionCreators]: (
             ...args: Parameters<TActionCreators[K]>

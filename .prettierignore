@@ -1,3 +1,4 @@
 .prettierrc
+/.yarn
 /coverage
 /dist

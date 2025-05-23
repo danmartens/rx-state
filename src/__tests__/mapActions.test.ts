@@ -22,7 +22,7 @@ describe('mapActions', () => {
           PING: () => ({
             type: 'PONG',
           }),
-        })
+        }),
       )
       .subscribe((action) => {
         results.push(action);

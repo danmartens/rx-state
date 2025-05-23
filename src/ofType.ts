@@ -20,7 +20,7 @@ export function ofType<
   // The types you want to filter for
   TType extends TInput['type'],
   // The resulting actions that match the above types
-  TOutput extends TInput = Extract<TInput, Action<TType>>
+  TOutput extends TInput = Extract<TInput, Action<TType>>,
 >(...types: [TType, ...TType[]]): OperatorFunction<TInput, TOutput> {
   const count = types.length;
 
@@ -31,7 +31,7 @@ export function ofType<
 
     if (types.some((key) => key === null || key === undefined)) {
       console.warn(
-        'ofType was called with one or more undefined or null values!'
+        'ofType was called with one or more undefined or null values!',
       );
     }
   }
@@ -47,6 +47,6 @@ export function ofType<
           }
 
           return false;
-        }
+        },
   );
 }

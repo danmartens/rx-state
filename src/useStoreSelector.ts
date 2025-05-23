@@ -4,7 +4,7 @@ import { Action, Store } from './types';
 
 export const useStoreSelector = <TState, TAction extends Action, TSelected>(
   store: Store<TState, TAction>,
-  selector: (state: TState) => TSelected
+  selector: (state: TState) => TSelected,
 ): TSelected => {
   const subscribe = useCallback(
     (onChange: () => void) => {
@@ -18,12 +18,12 @@ export const useStoreSelector = <TState, TAction extends Action, TSelected>(
         subscription.unsubscribe();
       };
     },
-    [store]
+    [store],
   );
 
   return useSyncExternalStore(
     subscribe,
     () => selector(store.getState()),
-    () => selector(store.getState())
+    () => selector(store.getState()),
   );
 };

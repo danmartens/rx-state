@@ -10,19 +10,19 @@ export function createEffect<
   TOutput extends TInput = Extract<TInput, Action<TType>>,
   TEffect extends (action: TOutput, state: TState) => PromiseLike<TInput> = (
     action: TOutput,
-    state: TState
-  ) => PromiseLike<TInput>
+    state: TState,
+  ) => PromiseLike<TInput>,
 >(
   type: TType,
-  effect: TEffect
+  effect: TEffect,
 ): (
   action$: Observable<TInput>,
-  state$: Observable<TState>
+  state$: Observable<TState>,
 ) => Observable<TInput> {
   return (action$, state$) =>
     action$.pipe(
       ofType<TInput, TType, TOutput>(type),
       withLatestFrom(state$),
-      mergeMap(([action, state]) => from(effect(action, state)))
+      mergeMap(([action, state]) => from(effect(action, state))),
     );
 }

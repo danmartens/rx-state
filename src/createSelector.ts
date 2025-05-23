@@ -67,20 +67,20 @@
  */
 export function createSelector<TState extends object, TResult>(
   selector: (state: TState) => TResult,
-  options?: Options
+  options?: Options,
 ): (state: TState) => TResult;
 
 export function createSelector<TState extends object, V1, TResult>(
   input1: (state: TState) => V1,
   selector: (input1: V1) => TResult,
-  options?: Options
+  options?: Options,
 ): (state: TState) => TResult;
 
 export function createSelector<TState extends object, V1, V2, TResult>(
   input1: (state: TState) => V1,
   input2: (state: TState) => V2,
   selector: (input1: V1, input2: V2) => TResult,
-  options?: Options
+  options?: Options,
 ): (state: TState) => TResult;
 
 export function createSelector<TState extends object, V1, V2, V3, TResult>(
@@ -88,7 +88,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
   input2: (state: TState) => V2,
   input3: (state: TState) => V3,
   selector: (input1: V1, input2: V2, input3: V3) => TResult,
-  options?: Options
+  options?: Options,
 ): (state: TState) => TResult;
 
 export function createSelector<TState extends object, V1, V2, V3, TResult>(
@@ -99,7 +99,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
     | ((state: TState) => V3)
     | Options,
   arg4?: ((input1: V1, input2: V2, input3: V3) => TResult) | Options,
-  arg5?: Options
+  arg5?: Options,
 ) {
   const v1Results = new WeakMap<TState, V1>();
   const v2Results = new WeakMap<TState, V2>();
@@ -139,7 +139,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
           cacheHitRate < cacheThreshold
         ) {
           console.log(
-            `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+            `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`,
           );
         }
       }
@@ -171,8 +171,8 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
         selector(
           v1Results.get(state) as V1,
           v2Results.get(state) as V2,
-          v3Results.get(state) as V3
-        )
+          v3Results.get(state) as V3,
+        ),
       );
 
       if (
@@ -213,7 +213,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
           if (cacheReadCount % 10 === 0 && cacheHitRate < cacheThreshold) {
             console.log(
-              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`,
             );
           }
         }
@@ -239,7 +239,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
       results.set(
         state,
-        selector(v1Results.get(state) as V1, v2Results.get(state) as V2)
+        selector(v1Results.get(state) as V1, v2Results.get(state) as V2),
       );
 
       if (
@@ -279,7 +279,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
           if (cacheReadCount % 10 === 0 && cacheHitRate < cacheThreshold) {
             console.log(
-              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`,
             );
           }
         }
@@ -337,7 +337,7 @@ export function createSelector<TState extends object, V1, V2, V3, TResult>(
 
           if (cacheReadCount % 10 === 0 && cacheHitRate < cacheThreshold) {
             console.log(
-              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`
+              `Cache hit rate (${cacheHitRate}) is below threshold (${cacheThreshold}) for selector: ${options.measure.name}`,
             );
           }
         }

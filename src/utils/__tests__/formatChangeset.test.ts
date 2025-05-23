@@ -17,7 +17,7 @@ describe('formatChangeset', () => {
   test('formats changesets (deeply nested)', () => {
     const changeset = diffObjects(
       { a: { b: { c: 1 } } },
-      { a: { b: { c: 2 } } }
+      { a: { b: { c: 2 } } },
     );
 
     expect(formatChangeset(changeset)).toEqual('a: \n  b: \n    c: 1 => 2');

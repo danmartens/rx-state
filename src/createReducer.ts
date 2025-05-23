@@ -2,7 +2,7 @@ import { Action } from './types';
 
 type Reducer<TState, TAction extends Action> = (
   state: TState,
-  action: TAction
+  action: TAction,
 ) => TState;
 
 export const createReducer =
@@ -12,7 +12,7 @@ export const createReducer =
         Readonly<TState>,
         Extract<TAction, { type: TType }>
       >;
-    }>
+    }>,
   ) =>
   (state: TState, action: TAction): TState => {
     const reducer = reducers[action.type as TAction['type']];
@@ -20,7 +20,7 @@ export const createReducer =
     if (reducer != null) {
       return reducer(
         state,
-        action as Extract<TAction, { type: typeof action.type }>
+        action as Extract<TAction, { type: typeof action.type }>,
       );
     }
 

@@ -39,15 +39,15 @@ export const createStore =
   <
     TState,
     TAction extends Action,
-    TDependencies extends Record<string, unknown> = {}
+    TDependencies extends Record<string, unknown> = {},
   >(
     reducer: (state: TState, action: TAction) => TState,
     effects: Effect<TAction, TState, TDependencies>[] = [],
-    options: Options<TState, TAction> = {}
+    options: Options<TState, TAction> = {},
   ): StoreFactory<TState, TAction, TDependencies> =>
   (
     initialState: TState,
-    dependencies: TDependencies
+    dependencies: TDependencies,
   ): Store<TState, TAction> => {
     const state$ = new BehaviorSubject<TState>(initialState);
     const distinctState$ = state$.pipe(distinctUntilChanged());
@@ -122,8 +122,8 @@ export const createStore =
             effect(action$, distinctState$, dependencies).subscribe(
               (action) => {
                 dispatch(action);
-              }
-            )
+              },
+            ),
           );
         }
       }
@@ -159,7 +159,7 @@ export const createStore =
 
                 effectSubscriptions.clear();
               }
-            })
+            }),
           )
           .subscribe(observerOrNext);
       },

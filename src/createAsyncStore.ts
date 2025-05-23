@@ -25,7 +25,7 @@ export interface Options<T> {
 export function createAsyncStore<T>(
   get: Getter<T>,
   set?: Setter<T>,
-  options: Options<T> = {}
+  options: Options<T> = {},
 ): AsyncStore<T> {
   const state$ = new BehaviorSubject<Result<T> | undefined>(undefined);
 
@@ -47,7 +47,7 @@ export function createAsyncStore<T>(
         }
       }
     }),
-    share()
+    share(),
   );
 
   let getPromise: Promise<T> | null = null;
@@ -89,7 +89,7 @@ export function createAsyncStore<T>(
                   reject(error);
                 },
               }),
-              toResult()
+              toResult(),
             )
             .subscribe((value) => {
               state$.next(value);
@@ -179,7 +179,7 @@ export function createAsyncStore<T>(
               getSubscription = null;
               setSubscription = null;
             }
-          })
+          }),
         )
         .subscribe(observerOrNext);
     },

@@ -5,11 +5,11 @@ import { Action, ActionOfType, Effect } from '../types';
 export const initializeEffect = <
   TAction extends Action,
   TState,
-  TDependencies extends Record<string, unknown>
+  TDependencies extends Record<string, unknown>,
 >(
   effect: Effect<TAction, TState, TDependencies>,
   state$: Observable<TState>,
-  dependencies: TDependencies
+  dependencies: TDependencies,
 ) => {
   const input$ = new Subject<TAction>();
   const output$ = effect(input$, state$, dependencies);
@@ -61,7 +61,7 @@ export const initializeEffect = <
    * `Effect`. Accepts an optional `predicate` to filter for the desired action.
    */
   const nextAction = (
-    predicate: (action: TAction) => boolean = () => true
+    predicate: (action: TAction) => boolean = () => true,
   ): Promise<TAction> => {
     return new Promise((resolve, reject) => {
       const subscription = output$.subscribe({
@@ -86,7 +86,7 @@ export const initializeEffect = <
    * dispatched by the `Effect`.
    */
   const nextActionOfType = <TType extends TAction['type']>(
-    actionType: TType
+    actionType: TType,
   ): Promise<ActionOfType<TAction, TType>> => {
     return new Promise((resolve, reject) => {
       const subscription = output$

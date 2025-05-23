@@ -11,7 +11,7 @@ export function useAsyncStoreState<T>(store: AsyncStore<T>): T {
         subscription.unsubscribe();
       };
     },
-    [store]
+    [store],
   );
 
   const getValue = useCallback((): T => {

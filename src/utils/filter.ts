@@ -4,7 +4,7 @@
  */
 export const filter = <T>(
   target: ReadonlyArray<T>,
-  predicate: (item: T) => boolean
+  predicate: (item: T) => boolean,
 ): ReadonlyArray<T> => {
   let modified = false;
 
