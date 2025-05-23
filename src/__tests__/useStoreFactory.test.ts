@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { createStore } from '../createStore';
 import { useStoreFactory } from '../useStoreFactory';
 
