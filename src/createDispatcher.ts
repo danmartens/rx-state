@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 
-import { Action, Dispatcher } from './types';
+import type { Action, Dispatcher } from './types';
 
 export function createDispatcher<
   TAction extends Action,

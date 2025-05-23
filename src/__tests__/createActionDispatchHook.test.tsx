@@ -1,8 +1,9 @@
 /* eslint-disable react-compiler/react-compiler */
 
-import { ReactNode } from 'react';
-import { render, act } from '@testing-library/react';
+import type { ReactNode } from 'react';
+
 import { screen } from '@testing-library/dom';
+import { act, render } from '@testing-library/react';
 
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';

@@ -1,6 +1,6 @@
-import { OperatorFunction, filter } from 'rxjs';
+import { type OperatorFunction, filter } from 'rxjs';
 
-import { Action } from './types';
+import type { Action } from './types';
 
 // Sourced from: https://github.com/redux-observable/redux-observable/blob/master/src/operators.ts
 

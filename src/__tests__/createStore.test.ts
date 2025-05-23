@@ -1,7 +1,7 @@
 import { filter, map, tap } from 'rxjs';
 
-import { createStore } from '../createStore';
 import { createDispatcher } from '../createDispatcher';
+import { createStore } from '../createStore';
 
 type Action = { type: 'PING' } | { type: 'PONG' };
 

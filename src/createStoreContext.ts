@@ -1,5 +1,5 @@
 import {
-  ReactNode,
+  type ReactNode,
   createContext,
   createElement,
   useCallback,
@@ -9,7 +9,8 @@ import {
   useSyncExternalStore,
 } from 'react';
 
-import { Action, Store, StoreFactory } from './types';
+import type { Action, Store, StoreFactory } from './types';
+
 import { useStoreDispatch } from './useStoreDispatch';
 import { useStoreState } from './useStoreState';
 

@@ -1,4 +1,4 @@
-import { Action } from './types';
+import type { Action } from './types';
 
 type Reducer<TState, TAction extends Action> = (
   state: TState,

@@ -1,6 +1,7 @@
 import { Observable, from, mergeMap, takeUntil, withLatestFrom } from 'rxjs';
 
-import { Action } from './types';
+import type { Action } from './types';
+
 import { ofType } from './ofType';
 
 export function createCancelableEffect<

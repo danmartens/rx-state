@@ -1,5 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
-import { Action, Store } from './types';
+
+import type { Action, Store } from './types';
 
 export const useStoreState = <TState, TAction extends Action>(
   store: Store<TState, TAction>,
