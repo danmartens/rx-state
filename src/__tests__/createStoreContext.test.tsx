@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 
 import { createStore } from '../createStore';
 import { createStoreContext } from '../createStoreContext';
