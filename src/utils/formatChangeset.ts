@@ -1,4 +1,4 @@
-import { Changeset } from './diffObjects';
+import type { Changeset } from './diffObjects';
 
 export const formatChangeset = (
   changeset: Changeset<any> | [unknown, unknown],

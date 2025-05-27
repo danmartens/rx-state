@@ -1,4 +1,5 @@
-import { Action, Store } from './types';
+import type { Action, Store } from './types';
+
 import { useStoreDispatch } from './useStoreDispatch';
 import { useStoreState } from './useStoreState';
 

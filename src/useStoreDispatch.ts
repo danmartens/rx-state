@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { Action, Store } from './types';
+import type { Action, Store } from './types';
 
 export const useStoreDispatch = <TState, TAction extends Action>(
   store: Store<TState, TAction>,
