@@ -165,5 +165,6 @@ export const createStore =
           .subscribe(observerOrNext);
       },
       getState: () => state$.getValue(),
+      action$,
     };
   };

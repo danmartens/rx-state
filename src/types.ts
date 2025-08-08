@@ -20,6 +20,7 @@ export interface Store<TState, TAction extends Action> {
   next(action: TAction): void;
   subscribe(observer: ObserverOrNext<TState>): Subscription;
   getState(): TState;
+  action$: Dispatcher<TAction>;
 }
 
 export type StoreFactory<
