@@ -4,6 +4,7 @@ import {
   createElement,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   useSyncExternalStore,
@@ -85,6 +86,22 @@ export const createStoreContext = <
     );
   };
 
+  const useActionEffect = (effect: (action: TAction) => void) => {
+    const store = useStoreContext();
+
+    if (store == null) {
+      throw new Error('Store is not initialized');
+    }
+
+    useEffect(() => {
+      const subscription = store.action$.subscribe(effect);
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, [effect, store.action$]);
+  };
+
   const useStore = () => {
     const store = useStoreContext();
 
@@ -126,6 +143,7 @@ export const createStoreContext = <
     useStoreContext,
     useSelector,
     useDispatch,
+    useActionEffect,
     useStore,
   };
 };
