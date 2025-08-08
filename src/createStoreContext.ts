@@ -35,8 +35,10 @@ export const createStoreContext = <
     return createElement(StoreContext.Provider, { value: store }, children);
   };
 
+  const useStoreContext = () => useContext(StoreContext);
+
   const useSelector = <TSelected>(selector: (state: TState) => TSelected) => {
-    const store = useContext(StoreContext);
+    const store = useStoreContext();
 
     const subscribe = useCallback(
       (onChange: () => void) => {
@@ -69,7 +71,7 @@ export const createStoreContext = <
   };
 
   const useDispatch = () => {
-    const store = useContext(StoreContext);
+    const store = useStoreContext();
 
     if (store == null) {
       throw new Error('Store is not initialized');
@@ -84,7 +86,7 @@ export const createStoreContext = <
   };
 
   const useStore = () => {
-    const store = useContext(StoreContext);
+    const store = useStoreContext();
 
     if (store == null) {
       throw new Error('Store is not initialized');
@@ -121,6 +123,7 @@ export const createStoreContext = <
   return {
     Provider,
     createActionDispatchHook,
+    useStoreContext,
     useSelector,
     useDispatch,
     useStore,
