@@ -1,4 +1,8 @@
-.prettierrc
 /.yarn
+
+/.prettierrc
+
+/.turbo
+
 /coverage
 /dist
