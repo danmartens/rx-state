@@ -12,7 +12,7 @@ export default defineConfig([
       tseslint.configs.recommended,
       react.configs.flat.recommended,
       react.configs.flat['jsx-runtime'],
-      reactHooks.configs['recommended-latest'],
+      reactHooks.configs.flat.recommended,
       reactCompiler.configs.recommended,
     ],
     plugins: {
