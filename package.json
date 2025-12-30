@@ -1,9 +1,9 @@
 {
   "name": "@danmartens/rx-state",
   "repository": "https://github.com/danmartens/rx-state.git",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "license": "MIT",
-  "packageManager": "yarn@4.9.1",
+  "packageManager": "yarn@4.12.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
@@ -22,10 +22,10 @@
   "scripts": {
     "test": "jest",
     "types:check": "tsc --noEmit",
-    "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint .",
-    "build": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript && tsc -p tsconfig.build.json",
     "prepare": "husky install"
   },
   "peerDependencies": {
@@ -61,7 +61,13 @@
     "rollup": "^4.41.0",
     "rxjs": "^7.8.2",
     "ts-node": "^10.9.2",
+    "turbo": "^2.7.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1"
+  },
+  "dependenciesMeta": {
+    "turbo": {
+      "built": true
+    }
   }
 }
