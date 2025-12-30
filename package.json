@@ -69,5 +69,8 @@
     "turbo": {
       "built": true
     }
+  },
+  "dependencies": {
+    "@danmartens/immutable": "^0.3.2"
   }
 }

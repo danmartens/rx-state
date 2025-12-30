@@ -1891,6 +1891,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@danmartens/immutable@npm:^0.3.2":
+  version: 0.3.2
+  resolution: "@danmartens/immutable@npm:0.3.2"
+  dependenciesMeta:
+    turbo:
+      built: true
+  checksum: 10/eebb875464f2b22c28fdb703c0c4ccdf40c4c0370193e1f19d5034a155154d707f5b80a6d378b279eb022668746b93d5173ad086efc0f2d64dd413b102b92ba4
+  languageName: node
+  linkType: hard
+
 "@danmartens/rx-state@workspace:.":
   version: 0.0.0-use.local
   resolution: "@danmartens/rx-state@workspace:."
@@ -1899,6 +1909,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.28.5"
     "@babel/preset-react": "npm:^7.28.5"
     "@babel/preset-typescript": "npm:^7.28.5"
+    "@danmartens/immutable": "npm:^0.3.2"
     "@rollup/plugin-typescript": "npm:^12.3.0"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/jest-dom": "npm:^6.9.1"

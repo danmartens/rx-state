@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/globals */
 /* eslint-disable react-compiler/react-compiler */
+/* eslint-disable react-hooks/globals */
 
 import type { ReactNode } from 'react';
 
