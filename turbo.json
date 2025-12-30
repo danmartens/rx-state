@@ -1,0 +1,28 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "types:check": {
+      "inputs": ["yarn.lock", "tsconfig.json", "src/**"]
+    },
+    "lint": {
+      "inputs": ["yarn.lock", "eslint.config.mjs", "src/**"]
+    },
+    "test": {
+      "dependsOn": ["types:check"],
+      "inputs": ["yarn.lock", "jest.config.mjs", "babel.config.js", "src/**"]
+    },
+    "format:check": {
+      "inputs": ["yarn.lock", ".prettierrc", ".prettierignore", "src/**"]
+    },
+    "build": {
+      "dependsOn": ["types:check", "lint", "test", "format:check"],
+      "inputs": [
+        "yarn.lock",
+        "tsconfig.build.json",
+        "rollup.config.ts",
+        "src/**"
+      ],
+      "outputs": ["dist/**"]
+    }
+  }
+}

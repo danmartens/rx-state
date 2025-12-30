@@ -1,6 +1,6 @@
 import {
   BehaviorSubject,
-  Subscription,
+  type Subscription,
   distinctUntilChanged,
   finalize,
 } from 'rxjs';
