@@ -83,7 +83,7 @@ describe('initializeEffect()', () => {
 
       expect(() => {
         dispatchImmediately({ type: 'PING' });
-      }).toThrowError('Something went wrong');
+      }).toThrow('Something went wrong');
     });
   });
 });
