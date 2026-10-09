@@ -21,7 +21,7 @@ const counterStore = createStore((state: number, action: Action) => {
     default:
       return state;
   }
-})(0);
+})(0, {});
 ```
 
 ## Using a Store
@@ -70,7 +70,7 @@ const counterStore = createStore((state: number, action: Action) => {
 });
 
 const Counter = ({ initialValue }: { initialValue: number }) => {
-  const [state, dispatch] = useStoreFactory(counterStore, initialValue);
+  const [state, dispatch] = useStoreFactory(counterStore, initialValue, {});
 
   /* ... */
 };
@@ -165,10 +165,13 @@ const persistPost = (action$) =>
     ),
   );
 
-const postsStore = createStore(reducer, [persistPost])({
-  posts: {},
-  postStatuses: {},
-});
+const postsStore = createStore(reducer, [persistPost], { hot: true })(
+  {
+    posts: {},
+    postStatuses: {},
+  },
+  {},
+);
 
 postsStore.next({
   type: 'CREATE_POST',
@@ -235,7 +238,7 @@ const notificationsStore = createStore<{ message: string }[], Action>(
   {
     action$,
   },
-);
+)([], {});
 
 const postsStore = createStore<State, Action>(
   (state, action) => {
@@ -270,7 +273,7 @@ const postsStore = createStore<State, Action>(
   {
     action$,
   },
-)({});
+)({}, {});
 ```
 
 Now when a post is created or fails to be created, the `postsStore` will
@@ -358,13 +361,17 @@ const ActiveUsers = () => {
 Now, the `ActiveUsers` component will only re-render when the array of users
 actually changes.
 
-### `createStore(reducer, effects?, action$?)`
+### `createStore(reducer, effects?, options?)`
 
-Returns a function that accepts an `initialState` and an optional `dependencies`
-object (for effects).
+Returns a function that accepts an `initialState` and a `dependencies` object
+(passed to effects).
 
 ```tsx
-createStore<S, A, D>(reducer: (state: S, action: A) => state, effects: Effect<S, A, D>[], action$?: Observable<A>): (initialState: S, dependencies: D) => Store<S, A, D>`
+createStore<S, A, D>(
+  reducer: (state: S, action: A) => S,
+  effects?: Effect<A, S, D>[],
+  options?: Options<S, A>,
+): (initialState: S, dependencies: D) => Store<S, A>
 ```
 
 #### `reducer: (state: S, action: A) => S`
@@ -374,13 +381,31 @@ dispatched. Just like with Redux, the state must be immutable and the reducer
 function must be pure (repeatedly calling the reducer with the same state and
 action inputs should always produce the same output).
 
-#### `effects: Effect<S, A, D>[]`
+#### `effects: Effect<A, S, D>[]`
 
-TODO: Document this argument
+An effect is a function that receives the store's action stream, its state
+stream and the `dependencies` object, and returns an observable of actions:
 
-#### `action$: Observable<A>`
+```tsx
+type Effect<A, S, D> = (
+  action$: Observable<A>,
+  state$: Observable<S>,
+  dependencies: D,
+) => Observable<A>;
+```
 
-TODO: Document this argument
+Every action emitted by an effect is dispatched back to the store.
+
+#### `options`
+
+- `hot?: boolean` — Stores are lazy by default: they only reduce actions and run
+  effects while they have at least one subscriber. Set `hot: true` to start them
+  immediately and keep them running.
+- `action$?: Dispatcher<A>` — An external dispatcher (see
+  [`createDispatcher()`](#createdispatcher)) to share between stores.
+- `logging?: { name: string; actions?: boolean | ((action: A) => boolean); state?: boolean | ((state: S) => boolean) }`
+  — Logs dispatched actions and state changes to the console. Logging is
+  disabled when `NODE_ENV` is `production`.
 
 ### `createStoreContext()`
 
