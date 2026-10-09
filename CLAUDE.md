@@ -37,7 +37,7 @@ CI (`.github/workflows/check.yml`) runs types:check, test, lint, format:check, a
 - `useStoreState`, `useStoreDispatch`, `useStore` (`[state, dispatch]`), `useStoreSelector` take a `Store` instance directly.
 - `useStoreFactory(factory, initialState, deps)` creates a component-local store once via `useState`.
 - `createStoreContext(factory)` returns a `Provider` plus context-bound hooks (`useSelector`, `useDispatch`, `useStore`, `useActionEffect`, `createActionDispatchHook`); the hooks throw if used outside the Provider.
-- `createSelector` memoizes derived selector results so `useSelector` doesn't re-render on new-but-equal references.
+- `createSelector` memoizes derived selector results by state object identity, preserving the result reference when it receives the same state object again.
 
 **Async stores (`createAsyncStore.ts`).** A separate, non-reducer primitive: `createAsyncStore(get, set?)` wraps a getter/setter that may return a value, Promise, or Observable. State is exposed as a `Result<T>` (`result.ts`: `ok`/`error` classes with `isOk`, `isError`, `orThrow`, `valueOf`, `equalTo`). Loading happens on first subscribe and is de-duplicated via a cached promise; `load(true)` forces a reload. Used from React via `useAsyncStore` / `useAsyncStoreState`.
 
