@@ -165,7 +165,7 @@ const persistPost = (action$) =>
     ),
   );
 
-const postsStore = createStore(reducer, [persistPost])(
+const postsStore = createStore(reducer, [persistPost], { hot: true })(
   {
     posts: {},
     postStatuses: {},
