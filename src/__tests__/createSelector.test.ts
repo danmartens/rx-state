@@ -87,8 +87,8 @@ describe('createSelector', () => {
       },
     };
 
-    const getPosts = jest.fn((state: State) => state.posts);
-    const getComments = jest.fn((state: State) => state.comments);
+    const getPosts = vi.fn((state: State) => state.posts);
+    const getComments = vi.fn((state: State) => state.comments);
 
     const getPostsAndComments = createSelector(
       getPosts,
@@ -147,9 +147,9 @@ describe('createSelector', () => {
       },
     };
 
-    const getUsers = jest.fn((state: State) => state.users);
-    const getPosts = jest.fn((state: State) => state.posts);
-    const getComments = jest.fn((state: State) => state.comments);
+    const getUsers = vi.fn((state: State) => state.users);
+    const getPosts = vi.fn((state: State) => state.posts);
+    const getComments = vi.fn((state: State) => state.comments);
 
     const getPostsAndCommentsWithUsers = createSelector(
       getUsers,

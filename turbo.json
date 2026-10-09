@@ -5,21 +5,36 @@
       "inputs": ["yarn.lock", "tsconfig.json", "src/**"]
     },
     "lint": {
-      "inputs": ["yarn.lock", "eslint.config.mjs", "src/**"]
+      "inputs": [
+        "yarn.lock",
+        "eslint.config.mjs",
+        "rolldown.config.ts",
+        "vitest.config.ts",
+        "vitest.setup.ts",
+        "src/**"
+      ]
     },
     "test": {
       "dependsOn": ["types:check"],
-      "inputs": ["yarn.lock", "jest.config.mjs", "babel.config.js", "src/**"]
+      "inputs": ["yarn.lock", "vitest.config.ts", "vitest.setup.ts", "src/**"]
     },
     "format:check": {
-      "inputs": ["yarn.lock", ".prettierrc", ".prettierignore", "src/**"]
+      "inputs": [
+        "yarn.lock",
+        ".prettierrc",
+        ".prettierignore",
+        "rolldown.config.ts",
+        "vitest.config.ts",
+        "vitest.setup.ts",
+        "src/**"
+      ]
     },
     "build": {
       "dependsOn": ["types:check", "lint", "test", "format:check"],
       "inputs": [
         "yarn.lock",
         "tsconfig.build.json",
-        "rollup.config.ts",
+        "rolldown.config.ts",
         "src/**"
       ],
       "outputs": ["dist/**"]

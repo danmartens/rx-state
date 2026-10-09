@@ -12,13 +12,13 @@ Yarn 4 (Berry) via Corepack, Node version from `.nvmrc` (24).
 
 ```sh
 yarn install
-yarn test                          # jest (jsdom, coverage always on)
+yarn test                          # vitest run (jsdom, globals, coverage always on)
 yarn test src/__tests__/createStore.test.ts   # single file
 yarn test -t "name of test"        # single test by name
 yarn types:check                   # tsc --noEmit
 yarn lint                          # eslint
 yarn format:check                  # prettier --check (yarn format to write)
-yarn build                         # rollup ESM + CJS into dist/, then tsc emits dist/types
+yarn build                         # rolldown ESM + CJS into dist/, then tsc emits dist/types
 yarn turbo build                   # runs types:check, lint, test, format:check, then build (used by publish)
 ```
 
@@ -45,4 +45,4 @@ CI (`.github/workflows/check.yml`) runs types:check, test, lint, format:check, a
 
 - Type parameter order differs between types: `Store<TState, TAction>` but `Effect<TAction, TState, TDependencies>`.
 - `verbatimModuleSyntax` is on: use `import type` / inline `type` for type-only imports. ESLint enforces import ordering (`perfectionist/sort-imports`).
-- Tests live in `__tests__/` directories next to the code they cover and run through Babel (not tsc), so type errors only surface via `yarn types:check`.
+- Tests live in `__tests__/` directories next to the code they cover and are transpiled by Vitest without type checking, so type errors only surface via `yarn types:check`.

@@ -34,7 +34,7 @@ describe('createStore', () => {
       const store = createStore((state) => state, [])(42, {});
 
       const observer = {
-        next: jest.fn(),
+        next: vi.fn(),
       };
 
       const subscription = store.subscribe(observer);
@@ -48,12 +48,12 @@ describe('createStore', () => {
     });
 
     test('creating multiple subscriptions does not cause actions to be dispatched multiple times', () => {
-      const reducer = jest.fn((state) => state);
+      const reducer = vi.fn((state) => state);
 
       const store = createStore(reducer, [])(42, {});
 
       const observer = {
-        next: jest.fn(),
+        next: vi.fn(),
       };
 
       const subscriptionA = store.subscribe(observer);

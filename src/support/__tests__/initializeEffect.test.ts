@@ -36,7 +36,7 @@ describe('initializeEffect()', () => {
 
   describe('dispatchImmediately()', () => {
     test('dispatches an action synchronously', () => {
-      const sideEffect = jest.fn();
+      const sideEffect = vi.fn();
 
       const effect: Effect<{ type: 'PING' } | { type: 'PONG' }, number> = (
         action$,
