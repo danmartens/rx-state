@@ -9,7 +9,7 @@
     },
     "test": {
       "dependsOn": ["types:check"],
-      "inputs": ["yarn.lock", "jest.config.mjs", "babel.config.js", "src/**"]
+      "inputs": ["yarn.lock", "vitest.config.ts", "vitest.setup.ts", "src/**"]
     },
     "format:check": {
       "inputs": ["yarn.lock", ".prettierrc", ".prettierignore", "src/**"]
@@ -19,7 +19,7 @@
       "inputs": [
         "yarn.lock",
         "tsconfig.build.json",
-        "rollup.config.ts",
+        "rolldown.config.ts",
         "src/**"
       ],
       "outputs": ["dist/**"]

@@ -16,7 +16,13 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["vitest/globals", "node"],
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "rollup.config.ts", "jest.setup.ts"]
+  "include": [
+    "src",
+    "rolldown.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ]
 }
