@@ -33,7 +33,7 @@ CI (`.github/workflows/check.yml`) runs types:check, test, lint, format:check, a
 
 **Effects.** `Effect = (action$, state$, dependencies) => Observable<Action>`; every action an effect emits is dispatched back into the store. `dependencies` is the second argument to the store factory (used for injecting API clients etc.). `createEffect(type, fn)` and `createCancelableEffect(type, cancelTypes, fn)` are helpers for promise-returning effects keyed on an action type; `ofType` and `mapActions` are RxJS operators for action filtering/mapping. `support/initializeEffect` is an exported test helper that drives a single effect in isolation (`dispatch`, `dispatchImmediately`, `nextAction`, `nextActionOfType`).
 
-**React bindings.** All hooks are built on `useSyncExternalStore`:
+**React bindings.** State-reading hooks are built on `useSyncExternalStore`:
 - `useStoreState`, `useStoreDispatch`, `useStore` (`[state, dispatch]`), `useStoreSelector` take a `Store` instance directly.
 - `useStoreFactory(factory, initialState, deps)` creates a component-local store once via `useState`.
 - `createStoreContext(factory)` returns a `Provider` plus context-bound hooks (`useSelector`, `useDispatch`, `useStore`, `useActionEffect`, `createActionDispatchHook`); the hooks throw if used outside the Provider.
