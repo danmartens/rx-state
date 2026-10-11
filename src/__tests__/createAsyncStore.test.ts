@@ -1,3 +1,5 @@
+import { Subject } from 'rxjs';
+
 import { createAsyncStore } from '../createAsyncStore';
 import { type Result, error, ok } from '../result';
 
@@ -89,6 +91,80 @@ describe('createAsyncStore', () => {
     expect(values).toEqual([ok(43), ok(44)]);
 
     subscription.unsubscribe();
+  });
+
+  describe('resubscribing', () => {
+    test('restarts a load that was canceled by the last unsubscribe', async () => {
+      let resolve: ((value: number) => void) | undefined;
+
+      const getter = vi.fn(
+        () =>
+          new Promise<number>((r) => {
+            resolve = r;
+          }),
+      );
+
+      const count = createAsyncStore(getter);
+
+      count.subscribe(() => {}).unsubscribe();
+
+      const values: Result<number>[] = [];
+
+      const subscription = count.subscribe((value) => {
+        values.push(value);
+      });
+
+      expect(getter).toHaveBeenCalledTimes(2);
+
+      resolve?.(42);
+
+      await nextTick();
+      await nextTick();
+
+      expect(values).toEqual([ok(42)]);
+      expect(count.getValue()).toEqual(ok(42));
+
+      subscription.unsubscribe();
+    });
+
+    test('resubscribes to a live Observable after the last unsubscribe', () => {
+      const source = new Subject<number>();
+      const getter = vi.fn(() => source.asObservable());
+      const count = createAsyncStore(getter);
+
+      const first = count.subscribe(() => {});
+
+      source.next(1);
+      first.unsubscribe();
+
+      const values: Result<number>[] = [];
+
+      const second = count.subscribe((value) => {
+        values.push(value);
+      });
+
+      source.next(2);
+
+      expect(getter).toHaveBeenCalledTimes(2);
+      expect(values).toEqual([ok(1), ok(2)]);
+
+      second.unsubscribe();
+    });
+
+    test('does not reload a getter that already completed', async () => {
+      const getter = vi.fn(() => Promise.resolve(42));
+      const count = createAsyncStore(getter);
+
+      const first = count.subscribe(() => {});
+
+      await nextTick();
+      await nextTick();
+
+      first.unsubscribe();
+      count.subscribe(() => {}).unsubscribe();
+
+      expect(getter).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('error handling', () => {

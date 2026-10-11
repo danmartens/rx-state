@@ -174,6 +174,13 @@ export function createAsyncStore<T>(
             }
 
             if (subscriptionCount === 0) {
+              // If the getter hasn't finished (an in-flight Promise or a live
+              // Observable), drop the cached promise so the next subscriber
+              // starts a new load instead of waiting on a canceled one.
+              if (getSubscription != null && !getSubscription.closed) {
+                getPromise = null;
+              }
+
               getSubscription?.unsubscribe();
               setSubscription?.unsubscribe();
 
