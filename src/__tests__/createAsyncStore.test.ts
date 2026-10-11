@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 
 import { createAsyncStore } from '../createAsyncStore';
 import { type Result, error, ok } from '../result';
@@ -257,6 +257,59 @@ describe('createAsyncStore', () => {
       });
 
       await expect(count.load()).rejects.toThrow('Test error');
+    });
+
+    describe('subscribing to a getter that fails', () => {
+      const unhandled: unknown[] = [];
+
+      const onUnhandledRejection = (reason: unknown) => {
+        unhandled.push(reason);
+      };
+
+      beforeEach(() => {
+        unhandled.length = 0;
+        process.on('unhandledRejection', onUnhandledRejection);
+      });
+
+      afterEach(() => {
+        process.off('unhandledRejection', onUnhandledRejection);
+      });
+
+      test.each([
+        [
+          'throws',
+          () => {
+            throw new Error('Test error');
+          },
+        ],
+        [
+          'returns a promise that rejects',
+          () => Promise.reject(new Error('Test error')),
+        ],
+        [
+          'returns an Observable that errors',
+          () => throwError(() => new Error('Test error')),
+        ],
+      ])(
+        'does not cause an unhandled rejection when the getter %s',
+        async (_, getter) => {
+          const count = createAsyncStore<number>(getter);
+          const values: Result<number>[] = [];
+
+          const subscription = count.subscribe((value) => {
+            values.push(value);
+          });
+
+          await new Promise((resolve) => setTimeout(resolve, 10));
+
+          expect(values).toEqual([error(new Error('Test error'))]);
+          expect(unhandled).toEqual([]);
+
+          await expect(count.load()).rejects.toThrow('Test error');
+
+          subscription.unsubscribe();
+        },
+      );
     });
 
     test('state can be updated after the getter rejects', async () => {

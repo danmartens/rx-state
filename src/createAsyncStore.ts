@@ -151,7 +151,9 @@ export function createAsyncStore<T>(
     },
     subscribe: (observerOrNext: ObserverOrNext<Result<T>>) => {
       if (subscriptionCount === 0) {
-        load();
+        // Subscribers receive a failed load as an error result, so the
+        // rejection is handled here; other callers of `load()` still see it.
+        load().catch(() => {});
       }
 
       subscriptionCount++;
@@ -215,6 +217,11 @@ function createPending<T>(): Pending<T> {
     resolve = res;
     reject = rej;
   });
+
+  // The promise may be rejected before any caller receives it (when the
+  // Observable errors synchronously); callers that do receive it still see the
+  // rejection.
+  promise.catch(() => {});
 
   return { promise, resolve, reject };
 }
