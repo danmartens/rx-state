@@ -93,6 +93,81 @@ describe('createAsyncStore', () => {
     subscription.unsubscribe();
   });
 
+  describe('load() after the state changes', () => {
+    test('resolves with the value passed to next', async () => {
+      const count = createAsyncStore(() => Promise.resolve(42));
+
+      await count.load();
+
+      count.next(43);
+
+      await expect(count.load()).resolves.toBe(43);
+    });
+
+    test('resolves with the value returned by the setter', async () => {
+      const count = createAsyncStore(
+        () => Promise.resolve(42),
+        async (value) => value * 2,
+      );
+
+      await count.load();
+
+      count.next(5);
+
+      await expect(count.load()).resolves.toBe(5);
+
+      await nextTick();
+      await nextTick();
+
+      await expect(count.load()).resolves.toBe(10);
+    });
+
+    test('rejects when the setter rejects', async () => {
+      const count = createAsyncStore(
+        () => Promise.resolve(42),
+        async () => {
+          throw new Error('Test error');
+        },
+      );
+
+      await count.load();
+
+      count.next(5);
+
+      await nextTick();
+      await nextTick();
+
+      await expect(count.load()).rejects.toThrow('Test error');
+    });
+
+    test('resolves when next cancels a pending Observable getter', async () => {
+      const count = createAsyncStore(() => new Subject<number>());
+
+      const pending = count.load();
+
+      count.next(43);
+
+      await expect(pending).resolves.toBe(43);
+      await expect(count.load()).resolves.toBe(43);
+    });
+
+    test('resolves with the latest value of an Observable getter', async () => {
+      const source = new Subject<number>();
+      const count = createAsyncStore(() => source.asObservable());
+
+      const subscription = count.subscribe(() => {});
+      const pending = count.load();
+
+      source.next(1);
+      source.next(2);
+
+      await expect(pending).resolves.toBe(1);
+      await expect(count.load()).resolves.toBe(2);
+
+      subscription.unsubscribe();
+    });
+  });
+
   describe('resubscribing', () => {
     test('restarts a load that was canceled by the last unsubscribe', async () => {
       let resolve: ((value: number) => void) | undefined;
