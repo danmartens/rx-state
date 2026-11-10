@@ -60,6 +60,28 @@ export function createAsyncStore<T>(
 
   const { logging } = options;
 
+  // Settles the promise returned by `load()` for an Observable getter that
+  // hasn't emitted yet.
+  let pending: Pending<T> | null = null;
+
+  // Updates the state and keeps the promise returned by `load()` in sync with
+  // it, so `load()` never resolves with a value that has since been replaced.
+  const setState = (result: Result<T>) => {
+    state$.next(result);
+
+    if (result.isOk()) {
+      pending?.resolve(result.valueOf());
+      getPromise = Promise.resolve(result.valueOf());
+    } else {
+      pending?.reject(result.valueOf());
+      getPromise = Promise.reject(result.valueOf());
+      // Only callers of `load()` should observe the rejection.
+      getPromise.catch(() => {});
+    }
+
+    pending = null;
+  };
+
   const load = (force = false): Promise<T> => {
     if (!force && getPromise != null) {
       return getPromise;
@@ -73,29 +95,14 @@ export function createAsyncStore<T>(
       if (getValue instanceof Promise) {
         getPromise = getValue;
 
-        getSubscription = from(getValue)
-          .pipe(toResult())
-          .subscribe((value) => {
-            state$.next(value);
-          });
+        getSubscription = from(getValue).pipe(toResult()).subscribe(setState);
       } else if (getValue instanceof Observable) {
-        getPromise = new Promise((resolve, reject) => {
-          getSubscription = getValue
-            .pipe(
-              tap({
-                next: (value) => {
-                  resolve(value);
-                },
-                error: (error) => {
-                  reject(error);
-                },
-              }),
-              toResult(),
-            )
-            .subscribe((value) => {
-              state$.next(value);
-            });
-        });
+        // Callers may already hold the promise of an earlier load that hasn't
+        // settled; keep it so they receive this load's value.
+        pending ??= createPending<T>();
+        getPromise = pending.promise;
+
+        getSubscription = getValue.pipe(toResult()).subscribe(setState);
       } else {
         getPromise = Promise.resolve(getValue);
 
@@ -124,7 +131,7 @@ export function createAsyncStore<T>(
       getSubscription = null;
       setSubscription = null;
 
-      state$.next(ok(nextValue));
+      setState(ok(nextValue));
 
       if (set != null) {
         const setResult = set(nextValue);
@@ -132,23 +139,21 @@ export function createAsyncStore<T>(
         if (setResult instanceof Promise) {
           setSubscription = from(setResult)
             .pipe(filter(isDefined), toResult())
-            .subscribe((value) => {
-              state$.next(value);
-            });
+            .subscribe(setState);
         } else if (setResult instanceof Observable) {
           setSubscription = setResult
             .pipe(filter(isDefined), toResult())
-            .subscribe((value) => {
-              state$.next(value);
-            });
+            .subscribe(setState);
         } else if (setResult != null) {
-          state$.next(ok(setResult));
+          setState(ok(setResult));
         }
       }
     },
     subscribe: (observerOrNext: ObserverOrNext<Result<T>>) => {
       if (subscriptionCount === 0) {
-        load();
+        // Subscribers receive a failed load as an error result, so the
+        // rejection is handled here; other callers of `load()` still see it.
+        load().catch(() => {});
       }
 
       subscriptionCount++;
@@ -174,6 +179,13 @@ export function createAsyncStore<T>(
             }
 
             if (subscriptionCount === 0) {
+              // If the getter hasn't finished (an in-flight Promise or a live
+              // Observable), drop the cached promise so the next subscriber
+              // starts a new load instead of waiting on a canceled one.
+              if (getSubscription != null && !getSubscription.closed) {
+                getPromise = null;
+              }
+
               getSubscription?.unsubscribe();
               setSubscription?.unsubscribe();
 
@@ -189,4 +201,27 @@ export function createAsyncStore<T>(
     },
     load,
   };
+}
+
+interface Pending<T> {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+  reject: (error: unknown) => void;
+}
+
+function createPending<T>(): Pending<T> {
+  let resolve!: (value: T) => void;
+  let reject!: (error: unknown) => void;
+
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  // The promise may be rejected before any caller receives it (when the
+  // Observable errors synchronously); callers that do receive it still see the
+  // rejection.
+  promise.catch(() => {});
+
+  return { promise, resolve, reject };
 }

@@ -1,3 +1,5 @@
+import { Subject, throwError } from 'rxjs';
+
 import { createAsyncStore } from '../createAsyncStore';
 import { type Result, error, ok } from '../result';
 
@@ -91,6 +93,155 @@ describe('createAsyncStore', () => {
     subscription.unsubscribe();
   });
 
+  describe('load() after the state changes', () => {
+    test('resolves with the value passed to next', async () => {
+      const count = createAsyncStore(() => Promise.resolve(42));
+
+      await count.load();
+
+      count.next(43);
+
+      await expect(count.load()).resolves.toBe(43);
+    });
+
+    test('resolves with the value returned by the setter', async () => {
+      const count = createAsyncStore(
+        () => Promise.resolve(42),
+        async (value) => value * 2,
+      );
+
+      await count.load();
+
+      count.next(5);
+
+      await expect(count.load()).resolves.toBe(5);
+
+      await nextTick();
+      await nextTick();
+
+      await expect(count.load()).resolves.toBe(10);
+    });
+
+    test('rejects when the setter rejects', async () => {
+      const count = createAsyncStore(
+        () => Promise.resolve(42),
+        async () => {
+          throw new Error('Test error');
+        },
+      );
+
+      await count.load();
+
+      count.next(5);
+
+      await nextTick();
+      await nextTick();
+
+      await expect(count.load()).rejects.toThrow('Test error');
+    });
+
+    test('resolves when next cancels a pending Observable getter', async () => {
+      const count = createAsyncStore(() => new Subject<number>());
+
+      const pending = count.load();
+
+      count.next(43);
+
+      await expect(pending).resolves.toBe(43);
+      await expect(count.load()).resolves.toBe(43);
+    });
+
+    test('resolves with the latest value of an Observable getter', async () => {
+      const source = new Subject<number>();
+      const count = createAsyncStore(() => source.asObservable());
+
+      const subscription = count.subscribe(() => {});
+      const pending = count.load();
+
+      source.next(1);
+      source.next(2);
+
+      await expect(pending).resolves.toBe(1);
+      await expect(count.load()).resolves.toBe(2);
+
+      subscription.unsubscribe();
+    });
+  });
+
+  describe('resubscribing', () => {
+    test('restarts a load that was canceled by the last unsubscribe', async () => {
+      let resolve: ((value: number) => void) | undefined;
+
+      const getter = vi.fn(
+        () =>
+          new Promise<number>((r) => {
+            resolve = r;
+          }),
+      );
+
+      const count = createAsyncStore(getter);
+
+      count.subscribe(() => {}).unsubscribe();
+
+      const values: Result<number>[] = [];
+
+      const subscription = count.subscribe((value) => {
+        values.push(value);
+      });
+
+      expect(getter).toHaveBeenCalledTimes(2);
+
+      resolve?.(42);
+
+      await nextTick();
+      await nextTick();
+
+      expect(values).toEqual([ok(42)]);
+      expect(count.getValue()).toEqual(ok(42));
+
+      subscription.unsubscribe();
+    });
+
+    test('resubscribes to a live Observable after the last unsubscribe', () => {
+      const source = new Subject<number>();
+      const getter = vi.fn(() => source.asObservable());
+      const count = createAsyncStore(getter);
+
+      const first = count.subscribe(() => {});
+
+      source.next(1);
+      first.unsubscribe();
+
+      const values: Result<number>[] = [];
+
+      const second = count.subscribe((value) => {
+        values.push(value);
+      });
+
+      source.next(2);
+
+      expect(getter).toHaveBeenCalledTimes(2);
+      expect(values).toEqual([ok(1), ok(2)]);
+
+      second.unsubscribe();
+    });
+
+    test('does not reload a getter that already completed', async () => {
+      const getter = vi.fn(() => Promise.resolve(42));
+      const count = createAsyncStore(getter);
+
+      const first = count.subscribe(() => {});
+
+      await nextTick();
+      await nextTick();
+
+      first.unsubscribe();
+      count.subscribe(() => {}).unsubscribe();
+
+      expect(getter).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('error handling', () => {
     test('load should reject if the getter throws', async () => {
       const count = createAsyncStore(() => {
@@ -106,6 +257,59 @@ describe('createAsyncStore', () => {
       });
 
       await expect(count.load()).rejects.toThrow('Test error');
+    });
+
+    describe('subscribing to a getter that fails', () => {
+      const unhandled: unknown[] = [];
+
+      const onUnhandledRejection = (reason: unknown) => {
+        unhandled.push(reason);
+      };
+
+      beforeEach(() => {
+        unhandled.length = 0;
+        process.on('unhandledRejection', onUnhandledRejection);
+      });
+
+      afterEach(() => {
+        process.off('unhandledRejection', onUnhandledRejection);
+      });
+
+      test.each([
+        [
+          'throws',
+          () => {
+            throw new Error('Test error');
+          },
+        ],
+        [
+          'returns a promise that rejects',
+          () => Promise.reject(new Error('Test error')),
+        ],
+        [
+          'returns an Observable that errors',
+          () => throwError(() => new Error('Test error')),
+        ],
+      ])(
+        'does not cause an unhandled rejection when the getter %s',
+        async (_, getter) => {
+          const count = createAsyncStore<number>(getter);
+          const values: Result<number>[] = [];
+
+          const subscription = count.subscribe((value) => {
+            values.push(value);
+          });
+
+          await new Promise((resolve) => setTimeout(resolve, 10));
+
+          expect(values).toEqual([error(new Error('Test error'))]);
+          expect(unhandled).toEqual([]);
+
+          await expect(count.load()).rejects.toThrow('Test error');
+
+          subscription.unsubscribe();
+        },
+      );
     });
 
     test('state can be updated after the getter rejects', async () => {
